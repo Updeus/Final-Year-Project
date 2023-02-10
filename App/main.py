@@ -1,6 +1,7 @@
+from App.models import User
 import os
 from flask import Flask
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_manager
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -8,16 +9,23 @@ from werkzeug.datastructures import  FileStorage
 from datetime import timedelta
 
 
-from App.database import create_db
+from App.database import create_db, get_migrate
 
 from App.controllers import (
     setup_jwt
 )
 
-from App.views import views
+from App.views import (
+    user_views
+)
 
+# New views must be imported and added to this list
 
-def add_views(app):
+views = [
+    user_views
+]
+
+def add_views(app, views):
     for view in views:
         app.register_blueprint(view)
 
@@ -46,13 +54,33 @@ def create_app(config={}):
     loadConfig(app, config)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.config['SEVER_NAME'] = '0.0.0.0'
     app.config['PREFERRED_URL_SCHEME'] = 'https'
     app.config['UPLOADED_PHOTOS_DEST'] = "App/uploads"
     photos = UploadSet('photos', TEXT + DOCUMENTS + IMAGES)
     configure_uploads(app, photos)
-    add_views(app)
+    add_views(app, views)
     create_db(app)
+    login_manager=LoginManager(app)
+    login_manager.init_app(app)
+    migrate=get_migrate(app)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
     setup_jwt(app)
     app.app_context().push()
     return app
+
+app=create_app()
+app=Flask(__name__)
+login_manager=LoginManager(app) 
+login_manager.init_app(app)
+migrate=get_migrate(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
