@@ -8,7 +8,10 @@ def create_user(username, password):
     return newuser
 
 def get_user_by_username(username):
-    return User.query.filter_by(username=username).first()
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user = user.toJSON()
+    return user
 
 def get_user(id):
     return User.query.get(id)
@@ -28,5 +31,13 @@ def update_user(id, username):
     if user:
         user.username = username
         db.session.add(user)
+        db.session.commit()
+        return user
+    return None
+
+def delete_user(id):
+    user = get_user(id)
+    if user:
+        db.session.delete(user)
         return db.session.commit()
     return None
