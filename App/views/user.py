@@ -57,6 +57,10 @@ def showResources():
 def showReports():
     return render_template('Reports.html')
 
+@user_views.route('/activities',methods=['GET'])
+def showActivities():
+    return render_template('activities.html')
+
 @user_views.route('/home',methods=['GET'])
 @login_required
 def get_homePage():
