@@ -4,8 +4,8 @@
     }
 
   .myButton {
-    box-shadow: inset 0px 1px 0px 0px #54a3f7;
-    background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+   
+  
     background-color: #007dc1;
     border-radius: 3px;
     border: 1px solid #124d77;
@@ -14,10 +14,12 @@
     color: #ffffff;
     font-family: Arial;
     font-size: 13px;
-    padding: 6px 24px;
+    padding: 10px 90px;
     text-decoration: none;
     text-shadow: 0px 1px 0px #154682;
   }
+
+
 
   .myButton:hover {
     background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
@@ -33,52 +35,53 @@
     border: 1px solid black;
     margin: 10px;
   }
+
+  ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color:#007dc1;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #0e0585;
+}
+
+
+
+
+
+
 </style>
 {% extends "layout.html" %}
-{% block title %}AJA Coders{% endblock %}
-{% block page %}AJA Coders{% endblock %}
+{% block title %}DCIT Department Assistant{% endblock %}
+{% block page %}DCIT Department Assistant{% endblock %}
 {{ super() }}
 
 
 {% block content %}
 <h3> Hello {{ current_user.username }} !</h3>
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
-<div class="container">
-  <div class="row-height">
-    <div class="row">
-      <div class=" col-xs-3 card">
-        <div class="col-xs-12 text-center">
-          <button type="submit" class="myButton">Activities</button>
-        </div>
-        <div class="col-xs-12 text-center">
-        </div>
-      </div>
-      <div class=" col-xs-3 card">
-        <div class="col-xs-12 text-center">
-          <a style="margin-right:30px" href="/resources" method="GET" class="myButton" >Resources</a>
-        </div>
-        <div class="col-xs-12 text-center">
-        </div>
-      </div>
-      <div class=" col-xs-3 card">
-        <div class="col-xs-12 text-center">
-          <a style="margin-right:30px" href="/reports" method="GET" class="myButton" >Reports</a>
-        </div>
-        <div class="col-xs-12 text-center">
-        </div>
-      </div>
-      <div class=" col-xs-3 card">
-        <div class="col-xs-12 text-center">
-          <!-- <button type="submit" class="myButton">View Account</button> -->
-          <a style="margin-right:30px" href="/account" method="GET" class="myButton" >View Account</a>
-        </div>
-        <div class="col-xs-12 text-center">
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<ul>
+  <li><a class="active" href="/home">Activities</a></li>
+  <li><a href="/resources">Resources</a></li>
+  <li><a href="/reports">Report</a></li>
+  <li><a href="/account">Account</a></li>
+</ul>
+
 
 
 
