@@ -49,6 +49,10 @@ def userSignUP():
 def showAccount():
     return render_template('Account.html')
 
+@user_views.route('/resources',methods=['GET'])
+def showResources():
+    return render_template('Resources.html')
+
 @user_views.route('/home',methods=['GET'])
 @login_required
 def get_homePage():

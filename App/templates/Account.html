@@ -1,10 +1,12 @@
 <style>
     body {
-        background: rgb(2, 0, 36);
-        background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(136, 47, 191, 1) 35%, rgba(0, 212, 255, 1) 100%);
+        background: rgb(255, 255, 255);
     }
 
     h3 {
+        text-align: center;
+    }
+    li {
         text-align: center;
     }
 
@@ -47,23 +49,15 @@
 {% block content %}
 <div class="card">
     <div class="card-content">
-        <p>I am a very simple card. I am good at containing small bits of information. I am convenient because I require
-            little markup to use effectively.</p>
+        <h3>Hello {{ current_user.username }}!</h3>
     </div>
     <div class="card-tabs">
-        <ul class="tabs tabs-fixed-width">
-            <li class="tab"><a>Change Email</a></li>
-            <li class="tab"><a>Edit Password</a></li>
-            <li class="tab"><a>Edit UserName</a></li>
-        </ul>
+        <ul class="collection">
+            <li class="collection-item">Change Email</li>
+            <li class="collection-item">Edit Password</li>
+            <li class="collection-item">Edit UserName - Current UserName : {{ current_user.username }}</li>
+          </ul>
     </div>
 </div>
-
-
-
-
-
-
-
 
 {% endblock %}
