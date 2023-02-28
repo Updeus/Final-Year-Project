@@ -53,6 +53,10 @@ def showAccount():
 def showResources():
     return render_template('Resources.html')
 
+@user_views.route('/reports',methods=['GET'])
+def showResources():
+    return render_template('Reports.html')
+
 @user_views.route('/home',methods=['GET'])
 @login_required
 def get_homePage():
