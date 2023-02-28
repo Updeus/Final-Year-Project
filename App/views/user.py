@@ -45,6 +45,9 @@ def userSignUP():
     user = create_user(data['username'], data['password'])
     return showLogin()
 
+@user_views.route('/account',methods=['GET'])
+def showAccount():
+    return render_template('Account.html')
 
 @user_views.route('/home',methods=['GET'])
 @login_required

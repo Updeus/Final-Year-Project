@@ -1,64 +1,89 @@
-<!-- <style> 
-  body{
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(136,47,191,1) 35%, rgba(0,212,255,1) 100%);
+<style>
+  body {
+    background: rgb(2, 0, 36);
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(136, 47, 191, 1) 35%, rgba(0, 212, 255, 1) 100%);
   }
-  .myButton {
-    box-shadow:inset 0px 1px 0px 0px #54a3f7;
-    background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
-    background-color:#007dc1;
-    border-radius:3px;
-    border:1px solid #124d77;
-    display:inline-block;
-    cursor:pointer;
-    color:#ffffff;
-    font-family:Arial;
-    font-size:13px;
-    padding:6px 24px;
-    text-decoration:none;
-    text-shadow:0px 1px 0px #154682;
-}
-.myButton:hover {
-    background:linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
-    background-color:#0061a7;
-}
-.myButton:active {
-    position:relative;
-    top:1px;
-}
 
-</style> -->
+  .myButton {
+    box-shadow: inset 0px 1px 0px 0px #54a3f7;
+    background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+    background-color: #007dc1;
+    border-radius: 3px;
+    border: 1px solid #124d77;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 13px;
+    padding: 6px 24px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #154682;
+  }
+
+  .myButton:hover {
+    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+    background-color: #0061a7;
+  }
+
+  .myButton:active {
+    position: relative;
+    top: 1px;
+  }
+
+  .card {
+    border: 1px solid black;
+    margin: 10px;
+  }
+</style>
 {% extends "layout.html" %}
 {% block title %}AJA Coders{% endblock %}
 {% block page %}AJA Coders{% endblock %}
 {{ super() }}
 
 
-    {% block content %}
-    <h3> Hello {{ current_user.username }} !</h3>
-        
+{% block content %}
+<h3> Hello {{ current_user.username }} !</h3>
 
-
-
-    <!-- <div class="row">
-      <div class="col s12 m7">
-        <div class="card">
-          <div class="card-image">
-            <img src="images/sample-1.jpg">
-            <span class="card-title">Card Title</span>
-          </div>
-          <div class="card-content">
-            <p>I am a very simple card. I am good at containing small bits of information.
-            I am convenient because I require little markup to use effectively.</p>
-          </div>
-          <div class="card-action">
-            <a href="#">This is a link</a>
-          </div>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+<div class="container">
+  <div class="row-height">
+    <div class="row">
+      <div class=" col-xs-3 card">
+        <div class="col-xs-12 text-center">
+          <button type="submit" class="myButton">Activities</button>
+        </div>
+        <div class="col-xs-12 text-center">
         </div>
       </div>
-    </div> -->
-            
+      <div class=" col-xs-3 card">
+        <div class="col-xs-12 text-center">
+          <button type="submit" class="myButton">Resources</button>
+        </div>
+        <div class="col-xs-12 text-center">
+        </div>
+      </div>
+      <div class=" col-xs-3 card">
+        <div class="col-xs-12 text-center">
+          <button type="submit" class="myButton">Reports</button>
+        </div>
+        <div class="col-xs-12 text-center">
+        </div>
+      </div>
+      <div class=" col-xs-3 card">
+        <div class="col-xs-12 text-center">
+          <!-- <button type="submit" class="myButton">View Account</button> -->
+          <a style="margin-right:30px" href="/account" method="GET" class="myButton" >View Account</a>
+        </div>
+        <div class="col-xs-12 text-center">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    {% endblock %}
 
 
+
+
+
+{% endblock %}
