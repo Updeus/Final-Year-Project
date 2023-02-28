@@ -54,7 +54,7 @@ def showResources():
     return render_template('Resources.html')
 
 @user_views.route('/reports',methods=['GET'])
-def showResources():
+def showReports():
     return render_template('Reports.html')
 
 @user_views.route('/home',methods=['GET'])
