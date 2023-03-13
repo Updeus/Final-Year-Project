@@ -28,7 +28,7 @@ def create_user_action():
     user = get_user_by_username(data['username'])
     if user:
         return jsonify({"message":"Username Already Taken"}) 
-    user = create_user(data['username'], data['password'])
+    user = create_user(data['username'], data['password'], data['email'])
     return jsonify({"message":"User Created"}) 
 
 @user_views.route('/',methods=['GET'])
@@ -42,7 +42,7 @@ def userSignUP():
     if user:
         flash("Sorry! Username exists in database already")
         return showSignUp()
-    user = create_user(data['username'], data['password'])
+    user = create_user(data['username'], data['password'], data['email'])
     return showLogin()
 
 @user_views.route('/account',methods=['GET'])
