@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+  <head>
+  
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+     <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <style>
+     body {
+    background: rgb(255, 255, 255);
+  }
+
+  .myButton {
+
+
+    background-color: #007dc1;
+    border-radius: 3px;
+    border: 1px solid #124d77;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 13px;
+    padding: 10px 90px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #154682;
+  }
+
+
+
+  .myButton:hover {
+    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+    background-color: #0061a7;
+  }
+
+  .myButton:active {
+    position: relative;
+    top: 1px;
+  }
+
+  .card {
+    border: 1px solid black;
+    margin: 10px;
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 2px;
+    overflow: hidden;
+    background-color: #007dc1;
+    text-align: justify;
+    display: block;
+    padding-top: 15px;
+    height: inherit;
+  
+  }
+
+  li {
+    display: inline-block;
+  
+   
+    
+  }
+
+  li a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size:large;
+    
+    
+  }
+
+  li a:hover:not(.active) {
+    background-color: #0e0585;
+   
+  }
+
+  .imgbox {
+    display: grid;
+    height: 100%;
+  }
+
+  .center-fit {
+    max-width: 100%;
+    max-height: 100vh;
+    margin: auto;
+  }
+
+  .nav-wrapper {
+    background-color: #007dc1;
+    text-align: center;
+    font-size:x-large;
+   
+   
+
+  }
+
+  .navbar {
+    padding-top: 55px;
+    display: block;
+
+    
+ 
+  }
+
+
+  
+
+  
+
+
+
+  </style>
+  <body>
+    <nav class="nav-extended" >
+      <div class="nav-wrapper">
+        <a href="/home" class="brand-logo center" style="border-bottom: 2px solid white; padding-bottom: 2px;">{% block page %}DCIT Department Assistant{% endblock %}</a>
+             
+        </div>
+      </div>
+    </nav>
+    
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <nav class="blue white-text" style="padding: 10px">
+      <div class="nav-wrapper">
+          <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+      </div>
+    </nav>
+
+
+    {% endif %}
+    {% endwith %}
+
+    <div class="container" id="content">{% block content %}{% endblock %}</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </body>
+</html>
