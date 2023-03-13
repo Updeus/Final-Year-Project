@@ -38,6 +38,29 @@
   }
   
 </style> -->
+
+<style>
+  img {
+    border-radius: 8px;
+    display:grid;
+    max-width: 50%;
+    height: auto;
+    float: left;
+    position: relative;
+    top: 75px;
+  }
+
+  h5{
+    font-family: Georgia, serif;
+  }
+
+  label{
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+  }
+
+  </style>
+
+
 {% extends "layout.html" %}
 {% block title %}DCIT Department Assistant{% endblock %}
 {% block page %}DCIT Department Assistant{% endblock %}
@@ -54,13 +77,13 @@
             
             <div class="right">
               <h5>Login</h5>
-              <p>Don't have an account? <a href="/signup">Create Your Account</a> it takes less than a minute</p>
+              <p style="font-family:Verdana, Geneva, Tahoma, sans-serif;">Don't have an account? <a href="/signup">Create Your Account</a></p>
               <form action="/auth" method="post">
 
 
                 <div class="field-wrap">
                   <label>
-                    UserName<span class="req">*</span>
+                    Username<span class="req">*</span>
                   </label>
                   <input type="text" name="username" required autocomplete="off"/>
                 </div>
@@ -79,6 +102,8 @@
             
         </div>
         <!-- partial -->
+
+        <img src="{{url_for('static', filename='uwi2.jpg')}}">
           
         </body>
     {% endblock %}
