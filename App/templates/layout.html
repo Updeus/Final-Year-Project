@@ -53,13 +53,20 @@
   ul {
     list-style-type: none;
     margin: 0;
-    padding: 5px;
+    padding: 2px;
     overflow: hidden;
     background-color: #007dc1;
+    text-align: justify;
+    display: block;
+    padding-top: 15px;
+    height: inherit;
+  
   }
 
   li {
-    float: left;
+    display: inline-block;
+   
+    
   }
 
   li a {
@@ -68,10 +75,13 @@
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    
   }
 
   li a:hover:not(.active) {
     background-color: #0e0585;
+   
   }
 
   .imgbox {
@@ -89,12 +99,15 @@
     background-color: #007dc1;
     text-align: center;
     font-size:x-large;
+   
 
   }
 
   .navbar {
     padding-top: 50px;
     display: block;
+    
+    
   }
 
 
@@ -108,20 +121,20 @@
   <body>
     <nav class="nav-extended">
       <div class="nav-wrapper">
-        <a href="/home" class="brand-logo center" >{% block page %}DCIT Department Assistant{% endblock %}</a>
+        <a href="/home" class="brand-logo center" style="border-bottom: 2px solid white; padding-bottom: 2px;">{% block page %}DCIT Department Assistant{% endblock %}</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/users">Users Jinja</a></li>
                 <li><a href="/static/users">Users JS</a></li>
             </ul>
-              <ul class = "navbar"></ul>
-                <ul>
-                  <li><a href="/activities">Activities</a></li>
-                  <li><a href="/resources">Resources</a></li>
-                  <li><a href="/reports">Report</a></li>
-                  <li><a href="/account">Account</a></li>
+              <ul class = "navbar">
+                <ul >
+                  <li style = "padding-left: 20vw"><a href="/activities">Activities</a></li>
+                  <li style = "padding-left: 10vw"><a href="/resources">Resources</a></li>
+                  <li style = "padding-left: 10vw"><a href="/reports">Report</a></li>
+                  <li style = "padding-left: 10vw"><a href="/account">Account</a></li>
                 </ul>
-          
+                </ul>
         </div>
       </div>
     </nav>
