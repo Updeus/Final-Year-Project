@@ -12,20 +12,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}{% endblock %}</title>
   </head>
+  <style>
+     body {
+    background: rgb(255, 255, 255);
+  }
+
+  .myButton {
+
+
+    background-color: #007dc1;
+    border-radius: 3px;
+    border: 1px solid #124d77;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 13px;
+    padding: 10px 90px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #154682;
+  }
+
+
+
+  .myButton:hover {
+    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+    background-color: #0061a7;
+  }
+
+  .myButton:active {
+    position: relative;
+    top: 1px;
+  }
+
+  .card {
+    border: 1px solid black;
+    margin: 10px;
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 5px;
+    overflow: hidden;
+    background-color: #007dc1;
+  }
+
+  li {
+    float: left;
+  }
+
+  li a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  li a:hover:not(.active) {
+    background-color: #0e0585;
+  }
+
+  .imgbox {
+    display: grid;
+    height: 100%;
+  }
+
+  .center-fit {
+    max-width: 100%;
+    max-height: 100vh;
+    margin: auto;
+  }
+
+  .nav-wrapper {
+    background-color: #007dc1;
+    text-align: center;
+    font-size:x-large;
+
+  }
+
+  .navbar {
+    padding-top: 50px;
+    display: block;
+  }
+
+
   
+
+  
+
+
+
+  </style>
   <body>
-    <nav class="blue">
+    <nav class="nav-extended">
       <div class="nav-wrapper">
-        <a href="#!" class="brand-logo center">{% block page %}AJA Coders{% endblock %}</a>
-        <div class="nav-wrapper">
-            <ul id="nav-mobile" class="left">
+        <a href="/home" class="brand-logo center" >{% block page %}DCIT Department Assistant{% endblock %}</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="/home">Home</a></li>
                 <li><a href="/users">Users Jinja</a></li>
                 <li><a href="/static/users">Users JS</a></li>
             </ul>
-            <ul id="nav-mobile" class="right">
-              <li><a href="/account">View Account</a></li>
-          </ul>
+              <ul class = "navbar"></ul>
+                <ul>
+                  <li><a href="/activities">Activities</a></li>
+                  <li><a href="/resources">Resources</a></li>
+                  <li><a href="/reports">Report</a></li>
+                  <li><a href="/account">Account</a></li>
+                </ul>
+          
         </div>
       </div>
     </nav>
@@ -41,6 +137,8 @@
           </ul>
       </div>
     </nav>
+
+
     {% endif %}
     {% endwith %}
 
