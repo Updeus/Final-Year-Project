@@ -1,5 +1,28 @@
-from App.models import User
+from App.models import User, Role
+from flask_sqlalchemy import SQLAlchemy
 from App.database import db
+from flask_user import login_required, UserManager, UserMixin
+
+
+
+def createAdmin():
+    user = get_user_by_username('Admin')
+    if user:
+        return None
+    admin_role = Role(name='Admin')
+    db.session.add(admin_role)
+    db.session.commit()   
+    admin = User(
+    username='Admin', password='Password1', email='admin@example.com')
+    db.session.add(admin)
+    db.session.commit()
+    admin.roles = get_role_by_name('Admin')
+    db.session.commit()
+    return
+
+def get_role_by_name(name):
+    role = Role.query.filter_by(name=name).first()
+    return role
 
 def create_user(username, password, email):
     newuser = User(username=username, password=password, email=email)
@@ -12,6 +35,9 @@ def get_user_by_username(username):
     if user:
         user = user.toJSON()
     return user
+
+
+
 
 def get_user(id):
     return User.query.get(id)

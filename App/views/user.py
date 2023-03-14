@@ -1,12 +1,17 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory, redirect, url_for, Flask, flash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_user import login_required, UserManager, UserMixin
 from flask_jwt import current_identity, jwt_required
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash 
 from datetime import date
 from datetime import datetime
+from App.database import db
+from App.models import User
 
 from App.controllers import (
+    createAdmin,
+
     create_user, 
     get_all_users,
     get_all_users_json,
@@ -22,18 +27,22 @@ from App.controllers import (
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
+@user_views.route('/',methods=['GET'])
+def showSignUp():
+    createAdmin()
+
+    return render_template('signupPage.html')
+
 @user_views.route('/api/newUser', methods=['POST'])
 def create_user_action():
     data = request.json
     user = get_user_by_username(data['username'])
     if user:
         return jsonify({"message":"Username Already Taken"}) 
-    user = create_user(data['username'], data['password'], data['email'])
+    user = create_user(data['username'], data['password'])
     return jsonify({"message":"User Created"}) 
 
-@user_views.route('/',methods=['GET'])
-def showSignUp():
-    return render_template('signupPage.html')
+
 
 @user_views.route('/signup',methods=['POST'])
 def userSignUP():
@@ -42,7 +51,7 @@ def userSignUP():
     if user:
         flash("Sorry! Username exists in database already")
         return showSignUp()
-    user = create_user(data['username'], data['password'], data['email'])
+    user = create_user(data['username'], data['password'],  data['email'])
     return showLogin()
 
 @user_views.route('/account',methods=['GET'])

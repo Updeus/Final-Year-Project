@@ -1,7 +1,9 @@
-from App.models import User
+from App.models import User, Role
 import os
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, login_manager
+from flask_user import login_required, UserManager, UserMixin
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -56,10 +58,13 @@ def create_app(config={}):
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config['PREFERRED_URL_SCHEME'] = 'https'
     app.config['UPLOADED_PHOTOS_DEST'] = "App/uploads"
+    app.config['USER_ENABLE_EMAIL'] = False
     photos = UploadSet('photos', TEXT + DOCUMENTS + IMAGES)
     configure_uploads(app, photos)
     add_views(app, views)
     create_db(app)
+    db = SQLAlchemy(app)
+    user_manager = UserManager(app, db, User)
     login_manager=LoginManager(app)
     login_manager.init_app(app)
     migrate=get_migrate(app)
@@ -68,6 +73,9 @@ def create_app(config={}):
         return User.query.get(user_id)
     setup_jwt(app)
     app.app_context().push()
+
+
+
     return app
 
 app=create_app()
