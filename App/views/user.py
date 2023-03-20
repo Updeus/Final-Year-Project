@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory, redirect, url_for, Flask, flash
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_login import UserMixin, login_user, LoginManager, logout_user, current_user
+#from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+
 from flask_user import login_required, UserManager, UserMixin
+#from flask_user import UserManager, UserMixin
 from flask_jwt import current_identity, jwt_required
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash 
@@ -11,7 +14,6 @@ from App.models import User
 
 from App.controllers import (
     createAdmin,
-
     create_user, 
     get_all_users,
     get_all_users_json,
