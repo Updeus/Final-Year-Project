@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
 from App.models import User, Role, Task
+from datetime import datetime
 
 
 
@@ -43,7 +44,7 @@ def assign_task():
     role_name = request.form.get('role_name')
     title = request.form.get('title')
     description = request.form.get('description')
-    due_date = request.form.get('due_date')
+    due_date = datetime.strptime(request.form.get('due_date'), '%Y-%m-%d')
     users_with_role = User.query.join(User.roles).filter(Role.name == role_name).all()
 
     for user in users_with_role:
@@ -167,6 +168,33 @@ def remove_user_role():
             flash('Role not found for the selected user.')
 
     return render_template('remove_user_role.html', users=users, roles=roles)
+
+
+@user_views.route('/admin/delegate_role', methods=['GET', 'POST'])
+@login_required
+def delegate_role():
+    if not current_user.has_roles('Admin'):
+        flash('You are not authorized to access this page.')
+        return redirect(url_for('user_views.home'))
+
+    users = User.query.all()
+    roles = Role.query.all()
+
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        role_id = request.form.get('role_id')
+
+        user = User.query.get(user_id)
+        role = Role.query.get(role_id)
+
+        if user and role:
+            user.roles.append(role)
+            db.session.commit()
+            flash('Role delegated to user successfully.')
+        else:
+            flash('Error delegating role.')
+
+    return render_template('delegate_role.html', users=users, roles=roles)
 
 
 @user_views.route('/signup', methods=['GET', 'POST'])

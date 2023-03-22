@@ -46,6 +46,7 @@
     <a class="btn btn-info mt-3" href="{{ url_for('user_views.create_role') }}">Create Role</a>
     <a class="btn btn-danger mt-3" href="{{ url_for('user_views.remove_role') }}">Remove Role</a>
     <a class="btn btn-warning mt-3" href="{{ url_for('user_views.remove_user_role') }}">Remove Role from User</a>
+    <a class="btn btn-success mt-3" href="{{ url_for('user_views.delegate_role') }}">Delegate Role to User</a>
     {% endif %}
     {% else %}
     <a class="btn btn-primary mt-3" href="{{ url_for('user_views.login') }}">Login</a>

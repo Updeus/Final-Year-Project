@@ -1,0 +1,37 @@
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Task Delegation App</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
+                <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+{% if current_user.is_authenticated %}
+    <h1>Delegate Role</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="user_id">Select User:</label>
+            <select class="form-control" id="user_id" name="user_id">
+                {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="role_id">Select Role:</label>
+            <select class="form-control" id="role_id" name="role_id">
+                {% for role in roles %}
+                <option value="{{ role.id }}">{{ role.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Delegate Role</button>
+    </form>
+{% endif %}
+{% endblock %}
