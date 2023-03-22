@@ -1,0 +1,43 @@
+<!-- assign_task.html -->
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Task Delegation App</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
+                <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<h1>Assign Task to Users by Role</h1>
+<form method="POST" action="{{ url_for('user_views.assign_task') }}">
+    <div class="form-group">
+        <label for="role_name">Role</label>
+        <select class="form-control" id="role_name" name="role_name" required>
+            <option value="" disabled selected>Select Role</option>
+            {% for role in roles %}
+            <option value="{{ role.name }}">{{ role.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="title">Task Title</label>
+        <input type="text" class="form-control" id="title" name="title" placeholder="Task title" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Task Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3"
+            placeholder="Task description"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="due_date">Due Date</label>
+        <input type="date" class="form-control" id="due_date" name="due_date" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Assign Task</button>
+</form>
+{% endblock %}

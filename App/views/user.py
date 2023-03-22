@@ -1,6 +1,5 @@
 from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_user import login_required, current_user, roles_required
 from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
 from App.models import User, Role, Task
@@ -20,7 +19,7 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
 
-        if user and check_password_hash(user.password, password):
+        if user and user.check_password(password):
             login_user(user)
             return redirect(url_for('user_views.view_tasks'))
         else:
@@ -34,10 +33,13 @@ def logout():
     logout_user()
     return redirect(url_for('user_views.login'))
 
-@user_views.route('/admin/assign_task', methods=['POST'])
+@user_views.route('/admin/assign_task', methods=['GET', 'POST'])
 @login_required
-@roles_required('Admin')
 def assign_task():
+    if request.method == 'GET':
+        roles = Role.query.all()
+        return render_template('assign_task.html', roles=roles)
+
     role_name = request.form.get('role_name')
     title = request.form.get('title')
     description = request.form.get('description')
@@ -181,8 +183,7 @@ def signup():
         if existing_user:
             flash('Username or email already exists.')
         else:
-            hashed_password = generate_password_hash(password)
-            new_user = User(username=username, email=email, password=hashed_password)
+            new_user = User(username=username, email=email, password=password)
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful. Please log in.')

@@ -6,6 +6,19 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Task Delegation App</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+          {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
+            <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
     <div class="container">
       <h1 class="mt-5">Create Role</h1>
       {% for message in get_flashed_messages() %}

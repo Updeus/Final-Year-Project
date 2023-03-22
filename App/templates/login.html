@@ -1,20 +1,93 @@
 <!-- login.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Login</title>
-  </head>
-  <body>
+
+<head>
+  <title>Login</title>
+  <style>
+    body {
+      background-color: #f7f7f7;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      margin: 0 auto;
+      max-width: 500px;
+      padding: 50px;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 36px;
+      font-weight: 700;
+      margin: 0 0 30px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    form {
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    label {
+      color: #333;
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      font-size: 18px;
+      padding: 10px;
+      width: 100%;
+    }
+
+    input[type="submit"] {
+      background-color: #333;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 10px 20px;
+      text-transform: uppercase;
+      transition: background-color 0.2s ease;
+      width: 100%;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
     <h1>Login</h1>
     {% for message in get_flashed_messages() %}
-      <p>{{ message }}</p>
+    <p>{{ message }}</p>
     {% endfor %}
     <form method="POST" action="{{ url_for('user_views.login') }}">
       <label for="username">Username:</label>
-      <input type="text" name="username" required><br>
+      <input type="text" name="username" required>
       <label for="password">Password:</label>
-      <input type="password" name="password" required><br>
+      <input type="password" name="password" required>
       <input type="submit" value="Login">
+      <p>Don't have an account? <a href="{{ url_for('user_views.signup') }}">Sign up</a></p>
     </form>
-  </body>
+  </div>
+</body>
+
 </html>

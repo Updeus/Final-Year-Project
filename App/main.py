@@ -4,7 +4,6 @@ from flask import Flask
 from flask_login import LoginManager, current_user, login_manager
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
-from flask_user import UserManager
 from App.database import db
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
@@ -51,6 +50,30 @@ def loadConfig(app, config):
     for key, value in config.items():
         app.config[key] = config[key]
 
+def create_admin_account(app):
+    with app.app_context():
+        admin_username = "Admin"
+        admin_password = "Password1"
+        admin_email = "admin@gmail.com"
+        admin_role_name = "Admin"
+
+        admin_role = Role.query.filter_by(name=admin_role_name).first()
+        if not admin_role:
+            admin_role = Role(name=admin_role_name)
+            db.session.add(admin_role)
+            db.session.commit()
+
+        admin = User.query.filter_by(username=admin_username).first()
+
+        if not admin:
+            admin = User(
+                username=admin_username,
+                email=admin_email,
+                password=admin_password
+            )
+            admin.roles.append(admin_role)
+            db.session.add(admin)
+            db.session.commit()
 
 def create_app(config={}):
     app = Flask(__name__, static_url_path='/static')
@@ -66,13 +89,13 @@ def create_app(config={}):
     create_db(app)
     login_manager=LoginManager(app)
     login_manager.init_app(app)
-    user_manager = UserManager(app, db, User)
     migrate=get_migrate(app)
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(user_id)
     setup_jwt(app)
     app.app_context().push()
+    create_admin_account(app)
     return app
 
 app=create_app()
