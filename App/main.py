@@ -1,11 +1,11 @@
-from App.models import User, Role
+from App.models import User, Role, Task
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, login_manager
-from flask_user import login_required, UserManager, UserMixin
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
+from flask_user import UserManager
+from App.database import db
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 from datetime import timedelta
@@ -44,11 +44,13 @@ def loadConfig(app, config):
         app.config['DEBUG'] = os.environ.get('ENV').upper() != 'PRODUCTION'
         app.config['ENV'] = os.environ.get('ENV')
         delta = os.environ.get('JWT_EXPIRATION_DELTA', 7)
-        
+    
+    app.config['USER_EMAIL_SENDER_EMAIL'] = os.environ.get('USER_EMAIL_SENDER_EMAIL', 'noreply@example.com')
     app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=int(delta))
-        
+
     for key, value in config.items():
         app.config[key] = config[key]
+
 
 def create_app(config={}):
     app = Flask(__name__, static_url_path='/static')
@@ -58,24 +60,19 @@ def create_app(config={}):
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config['PREFERRED_URL_SCHEME'] = 'https'
     app.config['UPLOADED_PHOTOS_DEST'] = "App/uploads"
-    app.config['USER_ENABLE_EMAIL'] = False
     photos = UploadSet('photos', TEXT + DOCUMENTS + IMAGES)
     configure_uploads(app, photos)
     add_views(app, views)
     create_db(app)
-    db = SQLAlchemy(app)
-    user_manager = UserManager(app, db, User)
     login_manager=LoginManager(app)
     login_manager.init_app(app)
+    user_manager = UserManager(app, db, User)
     migrate=get_migrate(app)
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(user_id)
     setup_jwt(app)
     app.app_context().push()
-
-
-
     return app
 
 app=create_app()

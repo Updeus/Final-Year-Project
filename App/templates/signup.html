@@ -1,0 +1,22 @@
+<!-- signup.html -->
+<!doctype html>
+<html>
+  <head>
+    <title>Sign Up</title>
+  </head>
+  <body>
+    <h1>Sign Up</h1>
+    {% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+    {% endfor %}
+    <form method="POST" action="{{ url_for('user_views.signup') }}">
+      <label for="username">Username:</label>
+      <input type="text" name="username" required><br>
+      <label for="email">Email:</label>
+      <input type="email" name="email" required><br>
+      <label for="password">Password:</label>
+      <input type="password" name="password" required><br>
+      <input type="submit" value="Sign Up">
+    </form>
+  </body>
+</html>

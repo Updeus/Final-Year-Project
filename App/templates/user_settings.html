@@ -1,0 +1,29 @@
+<!-- user_settings.html -->
+<!doctype html>
+<html>
+
+<head>
+    <title>User Settings</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-5">User Settings</h1>
+        {% for message in get_flashed_messages() %}
+        <p>{{ message }}</p>
+        {% endfor %}
+        <form method="POST" action="{{ url_for('user_views.user_settings') }}">
+            <label for="username">New Username:</label>
+            <input type="text" name="username" value="{{ current_user.username }}"><br>
+            <label for="email">New Email:</label>
+            <input type="email" name="email" value="{{ current_user.email }}"><br>
+            <label for="password">New Password:</label>
+            <input type="password" name="password"><br>
+            <input type="submit" value="Update Settings" class="btn btn-primary mt-3">
+        </form>
+    </div>
+
+</body>
+
+</html>

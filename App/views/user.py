@@ -1,137 +1,191 @@
-from flask import Blueprint, render_template, jsonify, request, send_from_directory, redirect, url_for, Flask, flash
-from flask_login import UserMixin, login_user, LoginManager, logout_user, current_user
-#from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-
-from flask_user import login_required, UserManager, UserMixin
-#from flask_user import UserManager, UserMixin
-from flask_jwt import current_identity, jwt_required
-from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash 
-from datetime import date
-from datetime import datetime
+from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_user import login_required, current_user, roles_required
+from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
-from App.models import User
+from App.models import User, Role, Task
 
-from App.controllers import (
-    createAdmin,
-    create_user, 
-    get_all_users,
-    get_all_users_json,
-    get_user,
-    get_user_by_username,
-    update_user,
-    delete_user,
-    login_user,
-    logout_user,
-    authenticate,
-    identity
-)
+
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
-@user_views.route('/',methods=['GET'])
-def showSignUp():
-    createAdmin()
 
-    return render_template('signupPage.html')
+@user_views.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('user_views.view_tasks'))
 
-@user_views.route('/api/newUser', methods=['POST'])
-def create_user_action():
-    data = request.json
-    user = get_user_by_username(data['username'])
-    if user:
-        return jsonify({"message":"Username Already Taken"}) 
-    user = create_user(data['username'], data['password'])
-    return jsonify({"message":"User Created"}) 
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
 
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('user_views.view_tasks'))
+        else:
+            flash('Invalid username or password.')
 
+    return render_template('login.html')
 
-@user_views.route('/signup',methods=['POST'])
-def userSignUP():
-    data = request.form
-    user = get_user_by_username(data['username'])
-    if user:
-        flash("Sorry! Username exists in database already")
-        return showSignUp()
-    user = create_user(data['username'], data['password'],  data['email'])
-    return showLogin()
-
-@user_views.route('/account',methods=['GET'])
-def showAccount():
-    return render_template('Account.html')
-
-@user_views.route('/resources',methods=['GET'])
-def showResources():
-    return render_template('Resources.html')
-
-@user_views.route('/reports',methods=['GET'])
-def showReports():
-    return render_template('Reports.html')
-
-@user_views.route('/activities',methods=['GET'])
-def showActivities():
-    return render_template('activities.html')
-
-@user_views.route('/home',methods=['GET'])
+@user_views.route('/logout')
 @login_required
-def get_homePage():
-    return render_template('homePage.html')
-
-@user_views.route('/users', methods=['GET'])
-def get_user_page():
-    users = get_all_users()
-    return render_template('users.html', users=users)
-
-@user_views.route('/api/users', methods=['GET'])
-def get_all_users_action():
-    users = get_all_users_json()
-    return jsonify(users)
-
-@user_views.route('/api/users/level/<int:id>', methods=['GET'])
-def get_user_action(id):
-    data = request.form
-    user = get_user(id)
-    if user:
-        return user.toJSON() 
-    return jsonify({"message":"User Not Found"})
-
-@user_views.route('/api/users', methods=['PUT'])
-def update_user_action():
-    data = request.form
-    user = update_user(data['id'], data['username'])
-    if user:
-        return jsonify({"message":"User Updated"})
-    return jsonify({"message":"User Not Found"})
-    
-
-@user_views.route('/auth',methods=['GET'])
-def showLogin():
-    return render_template('loginPage.html')
-
-@user_views.route('/api/users/<int:id>', methods=['DELETE'])
-def delete_user_action(id):
-    if get_user(id):
-        delete_user(id)
-        return jsonify({"message":"User Deleted"}) 
-    return jsonify({"message":"User Not Found"}) 
-
-@user_views.route('/auth',methods=['POST'])
-def loginAction():
-    data=request.form
-    user =authenticate(data['username'], data['password'])
-    if user == None:
-        flash("Username and password do not match")
-        return showLogin(), jsonify({"message":"Username and password do not match"}) 
-    login_user(user,remember=True)
-    return get_homePage()
-
-@user_views.route("/logout")
-@login_required
-def userLogout():
+def logout():
     logout_user()
-    return render_template("index.html")
+    return redirect(url_for('user_views.login'))
 
-@user_views.route('/api/users/identify', methods=['GET'])
-@jwt_required()
-def identify_user_action():
-    return jsonify({'message': f"username: {current_identity.username}, id : {current_identity.id}"})
+@user_views.route('/admin/assign_task', methods=['POST'])
+@login_required
+@roles_required('Admin')
+def assign_task():
+    role_name = request.form.get('role_name')
+    title = request.form.get('title')
+    description = request.form.get('description')
+    due_date = request.form.get('due_date')
+    users_with_role = User.query.join(User.roles).filter(Role.name == role_name).all()
+
+    for user in users_with_role:
+        task = Task(title=title, description=description, due_date=due_date, assigned_user_id=user.id)
+        db.session.add(task)
+
+    db.session.commit()
+
+    return redirect(url_for('user_views.view_tasks'))
+
+@user_views.route('/tasks', methods=['GET'])
+@login_required
+def view_tasks():
+    date = request.args.get('date')
+    if date:
+        tasks = current_user.tasks.filter(Task.due_date == date).all()
+    else:
+        tasks = current_user.tasks.all()
+
+    if not tasks:
+        return render_template('no_tasks.html')
+    else:
+        return render_template('tasks.html', tasks=tasks)
+
+@user_views.route('/')
+def home():
+    return render_template('home.html')
+
+
+@user_views.route('/admin/create_role', methods=['GET', 'POST'])
+@login_required
+def create_role():
+    if not current_user.has_roles('Admin'):
+        flash('You are not authorized to access this page.')
+        return redirect(url_for('user_views.home'))
+
+    if request.method == 'POST':
+        role_name = request.form.get('role_name')
+        existing_role = Role.query.filter_by(name=role_name).first()
+
+        if existing_role:
+            flash('Role already exists.')
+        else:
+            new_role = Role(name=role_name)
+            db.session.add(new_role)
+            db.session.commit()
+            flash('Role created successfully.')
+
+    return render_template('create_role.html')
+
+
+@user_views.route('/admin/remove_role', methods=['GET', 'POST'])
+@login_required
+def remove_role():
+    if not current_user.has_roles('Admin'):
+        flash('You are not authorized to access this page.')
+        return redirect(url_for('user_views.home'))
+
+    roles = Role.query.all()
+
+    if request.method == 'POST':
+        role_id = request.form.get('role_id')
+        role = Role.query.get(role_id)
+
+        if role:
+            db.session.delete(role)
+            db.session.commit()
+            flash('Role removed successfully.')
+        else:
+            flash('Role not found.')
+
+        roles = Role.query.all()
+
+    return render_template('remove_role.html', roles=roles)
+
+
+@user_views.route('/user/settings', methods=['GET', 'POST'])
+@login_required
+def user_settings():
+    if request.method == 'POST':
+        new_username = request.form.get('username')
+        new_email = request.form.get('email')
+        new_password = request.form.get('password')
+
+        if new_username:
+            current_user.username = new_username
+
+        if new_email:
+            current_user.email = new_email
+
+        if new_password:
+            current_user.password = generate_password_hash(new_password)
+
+        db.session.commit()
+        flash('Settings updated successfully.')
+
+    return render_template('user_settings.html')
+
+
+@user_views.route('/admin/remove_user_role', methods=['GET', 'POST'])
+@login_required
+def remove_user_role():
+    if not current_user.has_roles('Admin'):
+        flash('You are not authorized to access this page.')
+        return redirect(url_for('user_views.home'))
+
+    users = User.query.all()
+    roles = Role.query.all()
+
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        role_id = request.form.get('role_id')
+
+        user_role = UserRoles.query.filter_by(user_id=user_id, role_id=role_id).first()
+
+        if user_role:
+            db.session.delete(user_role)
+            db.session.commit()
+            flash('Role removed from user successfully.')
+        else:
+            flash('Role not found for the selected user.')
+
+    return render_template('remove_user_role.html', users=users, roles=roles)
+
+
+@user_views.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('user_views.view_tasks'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+
+        if existing_user:
+            flash('Username or email already exists.')
+        else:
+            hashed_password = generate_password_hash(password)
+            new_user = User(username=username, email=email, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registration successful. Please log in.')
+            return redirect(url_for('user_views.login'))
+
+    return render_template('signup.html')
