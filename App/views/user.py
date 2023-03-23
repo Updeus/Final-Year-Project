@@ -2,7 +2,8 @@ from flask import Blueprint, Flask, request, jsonify, render_template, redirect,
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
-from App.models import User, Role, Task
+from App.models import User, Role, Task, UserRoles
+from App.models.task import get_user_role_tasks
 from datetime import datetime
 
 
@@ -45,29 +46,33 @@ def assign_task():
     title = request.form.get('title')
     description = request.form.get('description')
     due_date = datetime.strptime(request.form.get('due_date'), '%Y-%m-%d')
-    users_with_role = User.query.join(User.roles).filter(Role.name == role_name).all()
+    role = Role.query.filter_by(name=role_name).first()
 
-    for user in users_with_role:
-        task = Task(title=title, description=description, due_date=due_date, assigned_user_id=user.id)
+    for user in role.users:
+        task = Task(title=title, description=description, due_date=due_date, assigned_user_id=user.id, role_id=role.id)
         db.session.add(task)
 
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
 
+
 @user_views.route('/tasks', methods=['GET'])
 @login_required
 def view_tasks():
     date = request.args.get('date')
+    user_role_tasks = get_user_role_tasks(current_user.id)
+
     if date:
-        tasks = current_user.tasks.filter(Task.due_date == date).all()
+        tasks = [task for task in user_role_tasks if task.due_date == date]
     else:
-        tasks = current_user.tasks.all()
+        tasks = user_role_tasks
 
     if not tasks:
         return render_template('no_tasks.html')
     else:
         return render_template('tasks.html', tasks=tasks)
+
 
 @user_views.route('/')
 def home():
@@ -152,22 +157,31 @@ def remove_user_role():
         return redirect(url_for('user_views.home'))
 
     users = User.query.all()
-    roles = Role.query.all()
+    user_roles = {user.id: user.roles for user in users}
 
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         role_id = request.form.get('role_id')
 
-        user_role = UserRoles.query.filter_by(user_id=user_id, role_id=role_id).first()
+        user = User.query.get(user_id)
+        role = Role.query.get(role_id)
 
-        if user_role:
-            db.session.delete(user_role)
+        if user and role and role in user.roles:
+            user.roles.remove(role)
+
+            # Remove tasks associated with the removed role
+            tasks_to_remove = Task.query.filter_by(assigned_user_id=user_id).join(Task.role).filter(Role.id == role_id).all()
+            for task in tasks_to_remove:
+                db.session.delete(task)
+
             db.session.commit()
-            flash('Role removed from user successfully.')
+            flash('Role removed from user successfully, and tasks associated with the role have been removed.')
         else:
             flash('Role not found for the selected user.')
 
-    return render_template('remove_user_role.html', users=users, roles=roles)
+    return render_template('remove_user_role.html', users=users, user_roles=user_roles)
+
+
 
 
 @user_views.route('/admin/delegate_role', methods=['GET', 'POST'])

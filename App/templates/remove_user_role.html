@@ -1,47 +1,41 @@
-<!-- remove_user_role.html -->
-<!doctype html>
-<html>
-
-<head>
-    <title>Remove User Role</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Task Delegation App</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav mr-auto">
-            {% if current_user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
-              <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-      </nav>
-    <div class="container">
-        <h1 class="mt-5">Remove Role from User</h1>
-        {% for message in get_flashed_messages() %}
-        <p>{{ message }}</p>
-        {% endfor %}
-        <form method="POST" action="{{ url_for('user_views.remove_user_role') }}">
-            <label for="user_id">User:</label>
-            <select name="user_id">
+{% block content %}
+    <h1>Remove User Role</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="user_id">User</label>
+            <select name="user_id" id="user_id" class="form-control">
                 {% for user in users %}
-                <option value="{{ user.id }}">{{ user.username }}</option>
+                    <option value="{{ user.id }}">{{ user.username }}</option>
                 {% endfor %}
-            </select><br>
-            <label for="role_id">Role:</label>
-            <select name="role_id">
-                {% for role in roles %}
-                <option value="{{ role.id }}">{{ role.name }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="role_id">Role</label>
+            <select name="role_id" id="role_id" class="form-control">
+                {% for user in users %}
+                    <optgroup label="{{ user.username }}" data-user="{{ user.id }}">
+                        {% for role in user_roles[user.id] %}
+                            <option value="{{ role.id }}">{{ role.name }}</option>
+                        {% endfor %}
+                    </optgroup>
                 {% endfor %}
-            </select><br>
-            <input type="submit" value="Remove Role from User" class="btn btn-danger mt-3">
-        </form>
-    </div>
-</body>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-danger">Remove Role</button>
+    </form>
 
-</html>
+    <script>
+        document.getElementById('user_id').addEventListener('change', function () {
+            let userId = this.value;
+            let roleSelect = document.getElementById('role_id');
+            for (let i = 0; i < roleSelect.children.length; i++) {
+                let optgroup = roleSelect.children[i];
+                if (optgroup.getAttribute('data-user') === userId) {
+                    optgroup.style.display = 'block';
+                } else {
+                    optgroup.style.display = 'none';
+                }
+            }
+        });
+    </script>
+{% endblock %}
