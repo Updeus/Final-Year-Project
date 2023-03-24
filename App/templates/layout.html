@@ -91,36 +91,26 @@
     background-color: #007dc1;
     text-align: center;
     font-size:x-large;
-   
-   
-
-  }
-
-  .navbar {
-    padding-top: 55px;
-    display: block;
-
-    
  
   }
 
+  .navbar {
+    display: block; 
+ 
+  }
+
+  .nav-extended{
+    height: 5vh;
+  }
 
   
-
-  
-
-
-
   </style>
   <body>
     <nav class="nav-extended" >
       <div class="nav-wrapper">
-        <a href="/home" class="brand-logo center" style="border-bottom: 2px solid white; padding-bottom: 2px;">{% block page %}DCIT Department Assistant{% endblock %}</a>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/users">Users Jinja</a></li>
-                <li><a href="/static/users">Users JS</a></li>
-            </ul>
+        <a href="/home">{% block page %}DCIT Department Assistant{% endblock %}</a>
+    
+        
               <ul class = "navbar">
                 <ul class="topnav" >
                   <li style = "padding-left: 20vw;"><a href="/activities">Activities</a></li>
