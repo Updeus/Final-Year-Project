@@ -4,23 +4,64 @@
 
 <head>
     <title>User Settings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Task Delegation App</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav mr-auto">
-            {% if current_user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
-              <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-      </nav>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="/home">{% block page %}DCIT Department Assistant{% endblock %}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_views.view_tasks') }}">Activities</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/resources">Resources</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/reports">Report</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_views.user_settings') }}">Account</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="container mt-2">
+    <div class="alert alert-info">
+      <ul class="mb-0">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <div class="container" id="content">{% block content %}{% endblock %}</div>
     <div class="container">
         <h1 class="mt-5">User Settings</h1>
         {% for message in get_flashed_messages() %}
