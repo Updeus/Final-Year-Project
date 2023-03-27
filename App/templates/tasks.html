@@ -32,6 +32,7 @@
                 <th>Description</th>
                 <th>Due Date</th>
                 <th>Assigned To</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,7 @@
                 <td>{{ task.description }}</td>
                 <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ task.assigned_user.username }}</td>
+                <td>{{ task.role.name }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -72,6 +74,7 @@
                 <th>Content</th>
                 <th>Timestamp</th>
                 <th>Attachment</th>
+                
             </tr>
         </thead>
         <tbody>

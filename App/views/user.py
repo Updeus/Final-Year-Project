@@ -19,7 +19,7 @@ user_views = Blueprint('user_views', __name__, template_folder='../templates')
 @user_views.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('user_views.view_tasks'))
+        return redirect(url_for('user_views.home'))
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -28,7 +28,7 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('user_views.view_tasks'))
+            return redirect(url_for('user_views.home'))
         else:
             flash('Invalid username or password.')
 
@@ -66,12 +66,14 @@ def assign_task():
 @login_required
 def view_tasks():
     date = request.args.get('date')
-    user_role_tasks = get_user_role_tasks(current_user.id)
+
+    if current_user.has_roles('Admin'):
+        tasks = Task.query.all()
+    else:
+        tasks = get_user_role_tasks(current_user.id)
 
     if date:
-        tasks = [task for task in user_role_tasks if task.due_date == date]
-    else:
-        tasks = user_role_tasks
+        tasks = [task for task in tasks if task.due_date == date]
 
     if not tasks:
         return render_template('no_tasks.html')
@@ -79,9 +81,33 @@ def view_tasks():
         return render_template('tasks.html', tasks=tasks)
 
 
+
 @user_views.route('/')
 def home():
     return render_template('home.html')
+
+@user_views.route('/admin/remove_task', methods=['GET', 'POST'])
+@login_required
+def remove_task():
+    if not current_user.has_roles('Admin'):
+        flash('You are not authorized to access this page.')
+        return redirect(url_for('user_views.home'))
+
+    roles = Role.query.all()
+    tasks = Task.query.all()
+
+    if request.method == 'POST':
+        task_id = request.form.get('task_id')
+        task = Task.query.get(task_id)
+
+        if task:
+            db.session.delete(task)
+            db.session.commit()
+            flash('Task removed successfully.')
+        else:
+            flash('Task not found.')
+
+    return render_template('remove_task.html', roles=roles, tasks=tasks)
 
 
 @user_views.route('/admin/create_role', methods=['GET', 'POST'])

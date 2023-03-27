@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Remove Task from Role{% endblock %}
+{% block page %}Remove Task from Role{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Remove Task from Role</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="task_id">Select Task:</label>
+            <select class="form-control" id="task_id" name="task_id">
+                {% for task in tasks %}
+                <option value="{{ task.id }}">{{ task.title }} ({{ task.role.name }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-danger">Remove Task</button>
+    </form>
+</div>
+{% endblock %}
