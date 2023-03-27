@@ -1,7 +1,31 @@
+<head>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Add jQuery and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+
 {% block content %}
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Task Delegation App</a>
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav mr-auto">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
+              <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+</body>
 <div class="container">
-    <h2>Task Details</h2>
-    <table class="table">
+    <h2 class="mb-4">Task Details</h2>
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>Title</th>
@@ -22,7 +46,7 @@
         </tbody>
     </table>
 
-    <h3>Add Comment</h3>
+    <h3 class="mt-5 mb-3">Add Comment</h3>
     {% if task %}
     <form action="{{ url_for('user_views.add_comment', task_id=task.id) }}" method="post" enctype="multipart/form-data">
         {% endif %}
@@ -32,13 +56,16 @@
         </div>
         <div class="form-group">
             <label for="attachment">Attachment:</label>
-            <input type="file" class="form-control-file" id="attachment" name="attachment">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="attachment" name="attachment">
+                <label class="custom-file-label" for="attachment">Choose file</label>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary">Add Comment</button>
     </form>
 
-    <h3>Comments</h3>
-    <table class="table">
+    <h3 class="mt-5 mb-3">Comments</h3>
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>User</th>
@@ -55,7 +82,8 @@
                 <td>{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
                 <td>
                     {% if comment.attachment %}
-                    <a href="{{ url_for('user_views.download_attachment', filename=comment.attachment) }}">Download</a>
+                    <a href="{{ url_for('user_views.download_attachment', filename=comment.attachment) }}"
+                        class="btn btn-sm btn-outline-primary">Download</a>
                     {% else %}
                     None
                     {% endif %}
