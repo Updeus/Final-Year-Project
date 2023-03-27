@@ -75,6 +75,31 @@ def create_admin_account(app):
             db.session.add(admin)
             db.session.commit()
 
+def create_roles(app):
+    with app.app_context():
+        role_names = [
+            "Curriculum Review",
+            "IT",
+            "Entrance",
+            "Graduate Studies and Research",
+            "Examination Quality Assurance Committee (EQAC)",
+            "Academic Advising Committee",
+            "Timetable",
+            "Library",
+            "Health, Safety and Environment",
+            "Building and Maintenance",
+            "Prizes",
+            "Outreach",
+            "Industry Liaison",
+        ]
+
+        for role_name in role_names:
+            role = Role.query.filter_by(name=role_name).first()
+            if not role:
+                role = Role(name=role_name)
+                db.session.add(role)
+                db.session.commit()
+
 def create_app(config={}):
     app = Flask(__name__, static_url_path='/static')
     CORS(app)
@@ -96,6 +121,7 @@ def create_app(config={}):
     setup_jwt(app)
     app.app_context().push()
     create_admin_account(app)
+    create_roles(app)
     return app
 
 app=create_app()
