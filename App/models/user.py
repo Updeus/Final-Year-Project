@@ -3,6 +3,7 @@ from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 from flask import current_app
+from sqlalchemy.orm import relationship
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,6 +11,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
+    comments = relationship("Comment", back_populates="user")
 
     def __init__(self, username, email, password):
         self.username = username

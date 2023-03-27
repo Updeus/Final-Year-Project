@@ -11,9 +11,9 @@ class Task(db.Model):
     due_date = db.Column(db.DateTime, nullable=True)
     assigned_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     assigned_user = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'))
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
-    role = db.relationship('Role', backref=db.backref('tasks', lazy='dynamic'))
-
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True) #remove nullable=True if problems 
+    role = db.relationship('Role', backref=db.backref('tasks', lazy=True))
+    comments = db.relationship('Comment', back_populates='task')
 
 def get_user_role_tasks(user_id):
     user = User.query.get(user_id)

@@ -1,12 +1,17 @@
-from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash
+import os
+from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 from App.database import db
-from App.models import User, Role, Task, UserRoles
+from App.models import User, Role, Task, UserRoles, Comment
 from App.models.task import get_user_role_tasks
 from datetime import datetime
 
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
@@ -232,3 +237,43 @@ def signup():
             return redirect(url_for('user_views.login'))
 
     return render_template('signup.html')
+
+
+@user_views.route('/tasks/<int:task_id>/comments', methods=['GET', 'POST'])
+@login_required
+def add_comment(task_id):
+    task = Task.query.get(task_id)
+    if not task or task.assigned_user_id != current_user.id:
+        flash("You don't have permission to access this task.")
+        return redirect(url_for('user_views.view_tasks'))
+
+    if request.method == 'POST':
+        content = request.form.get('content')
+        attachment = request.files.get('attachment')
+
+        if attachment and allowed_file(attachment.filename):
+            filename = secure_filename(attachment.filename)
+            attachment.save(os.path.join('App/uploads', filename))
+        else:
+            filename = None
+
+        comment = Comment(content=content, user_id=current_user.id, task_id=task_id, attachment=filename)
+        db.session.add(comment)
+        db.session.commit()
+        flash('Comment added successfully.')
+        return redirect(url_for('user_views.add_comment', task_id=task_id))
+
+    comments = Comment.query.filter_by(task_id=task_id).order_by(Comment.timestamp.desc()).all()
+
+    return render_template('tasks.html', task=task, comments=comments)
+
+
+
+@user_views.route('/tasks/comments/attachments/<path:filename>', methods=['GET'])
+@login_required
+def download_attachment(filename):
+    try:
+        return send_from_directory(directory='App/uploads', filename=filename, as_attachment=True)
+    except FileNotFoundError:
+        flash('The file was not found.')
+        return redirect(request.referrer)
