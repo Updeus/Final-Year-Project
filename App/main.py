@@ -1,6 +1,6 @@
 from App.models import User, Role, Task
 import os
-from flask import Flask
+from flask import Flask, json, render_template
 from flask_login import LoginManager, current_user, login_manager
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
@@ -122,6 +122,11 @@ def create_app(config={}):
     app.app_context().push()
     create_admin_account(app)
     create_roles(app)
+    @app.template_filter('tojson')
+    def tojson_filter(value):
+        return json.dumps(value, default=str)
+
+    app.jinja_env.filters['tojson'] = tojson_filter
     return app
 
 app=create_app()

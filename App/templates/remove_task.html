@@ -2,24 +2,6 @@
 {% block title %}Remove Task from Role{% endblock %}
 {% block page %}Remove Task from Role{% endblock %}
 {% block content %}
-<div class="container">
-    <h2 class="mb-4">Remove Task from Role</h2>
-    <form method="POST">
-        <div class="form-group">
-            <label for="task_id">Select Task:</label>
-            <select class="form-control" id="task_id" name="task_id" onchange="updateButtonStatus()">
-                <option value="">Select a task</option>
-                {% for task in tasks %}
-                <option value="{{ task.id }}">{{ task.title }} ({{ task.role.name }})</option>
-                {% endfor %}
-            </select>
-        </div>
-        <button type="submit" class="btn btn-danger" id="removeTaskButton" disabled>Remove Task</button>
-    </form>
-</div>
-
-{% endblock %}
-
 {% block scripts %}
 <script>
     function updateButtonStatus() {
@@ -31,5 +13,51 @@
             removeTaskButton.disabled = true;
         }
     }
+
+    function updateTasksDropdown() {
+        var roleSelect = document.getElementById("role_id");
+        var taskSelect = document.getElementById("task_id");
+
+        var tasks = {% raw %} { { tasks | tojson } } {% endraw %};
+    var filteredTasks = tasks.filter(task => task.role_id == roleSelect.value);
+
+    taskSelect.innerHTML = '<option value="">Select a task</option>';
+    filteredTasks.forEach(task => {
+        var option = document.createElement("option");
+        option.value = task.id;
+        option.text = task.title + " (" + task.role.name + ")";
+        taskSelect.add(option);
+    });
+
+    updateButtonStatus();
+    }
+
+
 </script>
+<div class="container">
+    <h2 class="mb-4">Remove Task from Role</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="role_id">Select Role:</label>
+            <select class="form-control" id="role_id" name="role_id" onchange="updateTasksDropdown()">
+                <option value="">Select a role</option>
+                {% for role in roles %}
+                <option value="{{ role.id }}">{{ role.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="task_id">Select Task:</label>
+            <select class="form-control" id="task_id" name="task_id" onchange="updateButtonStatus()">
+                <option value="">Select a task</option>
+                {% for task in tasks %}
+                <option value="{{ task.id }}">{{ task.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-danger" id="removeTaskButton">Remove Task</button>
+    </form>
+</div>
+
+{% endblock %}
 {% endblock %}

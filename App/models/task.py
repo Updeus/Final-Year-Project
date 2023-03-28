@@ -22,3 +22,6 @@ def get_user_role_tasks(user_id):
         role_tasks = Task.query.filter_by(role_id=role.id).all()
         user_role_tasks.extend(role_tasks)
     return user_role_tasks
+
+def get_tasks_by_user(user_id):
+    return Task.query.filter_by(assigned_user_id=user_id).all()

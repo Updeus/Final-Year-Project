@@ -1,11 +1,11 @@
 import os
-from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory
+from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory, json
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from App.database import db
 from App.models import User, Role, Task, UserRoles, Comment
-from App.models.task import get_user_role_tasks
+from App.models.task import get_user_role_tasks, get_tasks_by_user
 from datetime import datetime
 
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -277,6 +277,8 @@ def add_comment(task_id):
         content = request.form.get('content')
         attachment = request.files.get('attachment')
 
+        print(f"Content: {content}")  # Debugging line
+
         if attachment and allowed_file(attachment.filename):
             filename = secure_filename(attachment.filename)
             attachment.save(os.path.join('App/uploads', filename))
@@ -284,8 +286,10 @@ def add_comment(task_id):
             filename = None
 
         comment = Comment(content=content, user_id=current_user.id, task_id=task_id, attachment=filename)
+        print(f"Comment: {comment}")
         db.session.add(comment)
         db.session.commit()
+        print("Comment added to the database")
         flash('Comment added successfully.')
         return redirect(url_for('user_views.add_comment', task_id=task_id))
 
@@ -294,6 +298,29 @@ def add_comment(task_id):
     return render_template('tasks.html', task=task, comments=comments)
 
 
+
+@user_views.route('/resources', methods=['GET'])
+@login_required
+def resources():
+    if current_user.has_roles('Admin'):
+        tasks = Task.query.all()
+    else:
+        tasks = get_tasks_by_user(current_user.id)
+    
+    # Create a list of events with start and end dates for each task
+    events = []
+    for task in tasks:
+        event = {
+            'title': task.title.replace("12a", ""),
+            'start': task.due_date.isoformat().replace("12a", ""),
+            'end': task.due_date.isoformat().replace("12a", ""),
+        }
+        events.append(event)
+    
+    # Convert the events list to a JSON object
+    events_json = json.dumps(events)
+
+    return render_template('resources.html', events=events_json)
 
 @user_views.route('/tasks/comments/attachments/<path:filename>', methods=['GET'])
 @login_required
