@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+
 <head>
     <!-- Add Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -19,6 +20,7 @@
                 <th>Due Date</th>
                 <th>Assigned To</th>
                 <th>Role</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +31,19 @@
                 <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ task.assigned_user.username }}</td>
                 <td>{{ task.role.name }}</td>
+                <td>{{ task.status }}</td>
+                {% set user_is_role_leader = current_user == task.role.leader %}
+                {% if current_user.has_roles('Admin') or user_is_role_leader %}
+                <form action="{{ url_for('user_views.update_status', task_id=task.id) }}" method="POST">
+                    <select name="status">
+                        <option value="To Do" {% if task.status=='To Do' %}selected{% endif %}>To Do</option>
+                        <option value="Ongoing" {% if task.status=='Ongoing' %}selected{% endif %}>Ongoing</option>
+                        <option value="Completed" {% if task.status=='Completed' %}selected{% endif %}>Completed
+                        </option>
+                    </select>
+                    <button type="submit">Update Status</button>
+                </form>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
@@ -60,7 +75,7 @@
                 <th>Content</th>
                 <th>Timestamp</th>
                 <th>Attachment</th>
-                
+
             </tr>
         </thead>
         <tbody>

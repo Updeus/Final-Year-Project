@@ -7,6 +7,8 @@ from App.database import db
 from App.models import User, Role, Task, UserRoles, Comment
 from App.models.task import get_user_role_tasks, get_tasks_by_user
 from datetime import datetime
+from sqlalchemy import and_
+
 
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
@@ -40,6 +42,7 @@ def logout():
     logout_user()
     return redirect(url_for('user_views.login'))
 
+
 @user_views.route('/admin/assign_task', methods=['GET', 'POST'])
 @login_required
 def assign_task():
@@ -71,16 +74,27 @@ def view_tasks():
         tasks = Task.query.all()
     else:
         tasks = get_user_role_tasks(current_user.id)
+        role_leader_tasks = Task.query.join(Task.role).filter(and_(Role.leader_id == current_user.id, Task.assigned_user_id != current_user.id)).all()
+        tasks = [task for task in tasks if task not in role_leader_tasks]
 
     if date:
         tasks = [task for task in tasks if task.due_date == date]
+
+    # Filter out duplicate tasks
+    unique_tasks = []
+    seen_tasks = set()
+    for task in tasks:
+        task_key = (task.title, task.description, task.due_date)
+        if task_key not in seen_tasks:
+            unique_tasks.append(task)
+            seen_tasks.add(task_key)
+
+    tasks = unique_tasks
 
     if not tasks:
         return render_template('no_tasks.html')
     else:
         return render_template('tasks.html', tasks=tasks)
-
-
 
 @user_views.route('/')
 def home():
@@ -228,18 +242,24 @@ def delegate_role():
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         role_id = request.form.get('role_id')
+        is_role_leader = 'is_role_leader' in request.form
 
         user = User.query.get(user_id)
         role = Role.query.get(role_id)
 
         if user and role:
             user.roles.append(role)
+
+            if is_role_leader:
+                role.leader = user
+
             db.session.commit()
             flash('Role delegated to user successfully.')
         else:
             flash('Error delegating role.')
 
     return render_template('delegate_role.html', users=users, roles=roles)
+
 
 
 @user_views.route('/signup', methods=['GET', 'POST'])
@@ -330,3 +350,25 @@ def download_attachment(filename):
     except FileNotFoundError:
         flash('The file was not found.')
         return redirect(request.referrer)
+
+
+@user_views.route('/tasks/<int:task_id>/update_status', methods=['POST'])
+@login_required
+def update_status(task_id):
+    task = Task.query.get(task_id)
+
+    if not task or not (current_user.has_roles('Admin') or current_user.id == task.assigned_user_id):
+        flash("You don't have permission to update this task.")
+        return redirect(url_for('user_views.view_tasks'))
+
+    new_status = request.form.get('status')
+
+    if new_status not in ['To Do', 'Ongoing', 'Completed']:
+        flash('Invalid status.')
+        return redirect(request.referrer)
+
+    task.status = new_status
+    db.session.commit()
+
+    flash('Task status updated successfully.')
+    return redirect(url_for('user_views.view_tasks'))
