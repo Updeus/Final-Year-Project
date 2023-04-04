@@ -18,6 +18,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Due Date</th>
+                <th>Role Leader</th>
                 <th>Assigned To</th>
                 <th>Role</th>
                 <th>Status</th>
@@ -29,7 +30,8 @@
                 <td>{{ task.title }}</td>
                 <td>{{ task.description }}</td>
                 <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
-                <td>{{ task.assigned_user.username }}</td>
+                <td>{{ task.role.leader.username }}</td>
+                
                 <td>{{ task.role.name }}</td>
                 <td>{{ task.status }}</td>
                 {% set user_is_role_leader = current_user == task.role.leader %}
