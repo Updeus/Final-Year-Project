@@ -13,6 +13,135 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
+<style>
+ 
+
+  .column {
+  float: left;
+  width: 33.33%;
+  position: relative;
+
+}
+
+/* Clearfix (clear floats) */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+img {
+  height: 50vh;
+  padding: 10px;
+  background-color:#B6C4D5;
+ 
+  
+}
+
+img:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 100px 0 rgba(0, 0, 0, 0.19);
+}
+
+  
+.overlay {
+  position: absolute; 
+  background: rgb(0, 0, 0);
+  background: rgba(33, 32, 32, 0.5); /* Black see-through */
+  color: #f1f1f1; 
+  width:94%;
+  transition: .5s ease;
+  opacity:0;
+  color: white;
+  font-size: 20px;
+  padding: 10px;
+  text-align: left;
+}
+
+.container:hover .overlay {
+  opacity: 1;
+
+}
+
+.container .content {
+  position:absolute;
+  bottom: 0;
+  background: rgb(0, 0, 0); /* Fallback color */
+  background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+  color:white; 
+  width: 94%;
+  padding: 15px;
+  text-align: left;
+  
+  
+}
+
+.container {
+  position: relative;
+}
+
+img.hover-shadow {
+  transition: 0.3s;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.hover-shadow:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.dropbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  padding-right: 50px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+.dropbtn:hover {background-color: #3e8e41;}
+
+.button{
+  background-color: #099b65;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  height: 20px;
+}
+
+
+
+
+
+  </style>
+
 
 {% extends "layout.html" %}
 {% block title %}DCIT Department Assistant{% endblock %}
@@ -22,10 +151,11 @@
 
 {% block content %}
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Task Delegation App</a>
+
+    
    
-      </ul>
+
+  
     </div>
   </nav>
   <div class="container">
@@ -35,26 +165,78 @@
     {% endif %}
   </div>
 
-  <div class="container">
-    <h1 class="mt-5">Welcome to Task Delegation App</h1>
-
+  <h2 style="text-align:center">Welcome to DCIT Department Assistant</h2>
+  <br>
+  <div class="container" style="float: right; left: 20vh; padding-bottom: 20px;"> 
     {% if current_user.is_authenticated %}
-    <a class="btn btn-primary mt-3" href="{{ url_for('user_views.view_tasks') }}">View Tasks</a>
-    <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.user_settings') }}">User Settings</a>
+  <!----  <button class="dropbtn" href="{{ url_for('user_views.view_tasks') }}">View Tasks</button> 
+    <button class="dropbtn" href="{{ url_for('user_views.user_settings') }}">User Settings</button> -->
+    
     {% if current_user.has_roles('Admin') %}
-    <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.assign_task') }}
-    ">Delegate Tasks</a>
-    <a class="btn btn-info mt-3" href="{{ url_for('user_views.create_role') }}">Create Role</a>
-    <a class="btn btn-danger mt-3" href="{{ url_for('user_views.remove_role') }}">Remove Role</a>
-    <a class="btn btn-warning mt-3" href="{{ url_for('user_views.remove_user_role') }}">Remove Role from User</a>
-    <a class="btn btn-success mt-3" href="{{ url_for('user_views.delegate_role') }}">Delegate Role to User</a>
-    <a class="btn btn-danger mt-3" href="{{ url_for('user_views.remove_task') }}">Remove Task from Role</a>
+    
+    <button class="dropbtn" href="{{ url_for('user_views.assign_task') }}">Delegate Tasks</button>
+    
+    <div class="dropdown">
+      <button class="dropbtn">Role Management</button>
+      <div class="dropdown-content">
+        <a href="{{ url_for('user_views.create_role') }}">Create Role</a>
+        <a href="{{ url_for('user_views.delegate_role') }}">Delegate Role to User</a>
+        <a href="{{ url_for('user_views.remove_user_role') }}">Remove Role from User</a>
+        <a href="{{ url_for('user_views.remove_role') }}">Delete Role</a>
+        <a href="{{ url_for('user_views.remove_task') }}">Remove Task from Role</a>
+
+      </div>
+    </div>
     {% endif %}
     {% else %}
     <a class="btn btn-primary mt-3" href="{{ url_for('user_views.login') }}">Login</a>
     <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.signup') }}">Sign Up</a>
     {% endif %}
   </div>
+  <br>
+
+ 
+ <br>
+ <br>
+  
+  <div class="column">
+    <div class= "container" >
+      <a href="{{ url_for('user_views.view_tasks') }}">
+    <img src="{{url_for('static', filename='checkboxes.png')}}" style="width:100%">
+      </a>
+    <div class="content">
+      <h1>Tasks</h1> </div>
+      <div class="overlay">Manage your current activities</div>
+  </div>
+  </div>
+
+  <div class="column">
+    <div class= "container">
+      <a href="{{ url_for('user_views.resources') }}">
+    <img src="{{url_for('static', filename='calendarpic.png')}}" style="width:100%">
+    </a>
+    <div class="content">
+      <h1>Resources</h1> </div>
+      <div class="overlay">View your scheduled deadlines</div>
+  </div>
+  </div>
+
+  <div class="column">
+    <div class= "container">
+      <a href="/reports" >
+    <img src="{{url_for('static', filename='eport.png')}}" style="width:100%">
+    </a>
+    <div class="content">
+      <h1>Reports</h1> </div>
+      <div class="overlay">View monthly digest</div>
+  </div>
+  </div>
+ 
+ 
+ 
+ 
+ 
+ 
 </body>
 {% endblock %}
 </html>
