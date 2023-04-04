@@ -31,7 +31,13 @@
                 <td>{{ task.description }}</td>
                 <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ task.role.leader.username }}</td>
-                
+                <td>
+                    {% for user in task.role.users %}
+                    {% if user != task.role.leader %}
+                    {{ user.username }}{% if not loop.last %}, {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </td>
                 <td>{{ task.role.name }}</td>
                 <td>{{ task.status }}</td>
                 {% set user_is_role_leader = current_user == task.role.leader %}

@@ -57,7 +57,9 @@ def assign_task():
     role = Role.query.filter_by(name=role_name).first()
 
     for user in role.users:
-        task = Task(title=title, description=description, due_date=due_date, assigned_user_id=user.id, role_id=role.id)
+        task = Task(title=title, description=description, due_date=due_date)
+        task.assigned_user = user
+        task.role = role
         db.session.add(task)
 
     db.session.commit()
@@ -74,7 +76,7 @@ def view_tasks():
         tasks = Task.query.all()
     else:
         tasks = get_user_role_tasks(current_user.id)
-        role_leader_tasks = Task.query.join(Task.role).filter(and_(Role.leader_id == current_user.id, Task.assigned_user_id != current_user.id)).all()
+        role_leader_tasks = Task.query.join(Task.role).filter(and_(Role.leader_id == current_user.id, Task.assigned_users.any(User.id != current_user.id))).all()
         tasks = [task for task in tasks if task not in role_leader_tasks]
 
     if date:
@@ -95,6 +97,7 @@ def view_tasks():
         return render_template('no_tasks.html')
     else:
         return render_template('tasks.html', tasks=tasks)
+
 
 @user_views.route('/')
 def home():
