@@ -136,8 +136,13 @@ img.hover-shadow {
   height: 20px;
 }
 
-
-
+.img2{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  
+}
 
 
   </style>
@@ -189,8 +194,13 @@ img.hover-shadow {
     </div>
     {% endif %}
     {% else %}
+    
     <a class="btn btn-primary mt-3" href="{{ url_for('user_views.login') }}">Login</a>
     <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.signup') }}">Sign Up</a>
+    <br>
+    
+
+
     {% endif %}
   </div>
   <br>
@@ -198,6 +208,8 @@ img.hover-shadow {
  
  <br>
  <br>
+
+ {% if current_user.is_authenticated %}
   
   <div class="column">
     <div class= "container" >
@@ -231,7 +243,7 @@ img.hover-shadow {
       <div class="overlay">View monthly digest</div>
   </div>
   </div>
- 
+  {% endif %}
  
  
  
