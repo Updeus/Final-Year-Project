@@ -56,13 +56,14 @@ def assign_task():
 
     for user in role.users:
         task = Task(title=title, description=description, due_date=due_date)
-        task.assigned_user = user
+        task.assigned_users.append(user)
         task.role = role
         db.session.add(task)
 
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
+
 
 @user_views.route('/tasks', methods=['GET'])
 @login_required
@@ -76,19 +77,25 @@ def view_tasks():
         tasks = [task for task in tasks if task not in role_leader_tasks]
     if date:
         tasks = [task for task in tasks if task.due_date == date]
-    # Filter out duplicate tasks
-    unique_tasks = []
+
+    # Remove duplicate tasks from the database
     seen_tasks = set()
     for task in tasks:
         task_key = (task.title, task.description, task.due_date)
-        if task_key not in seen_tasks:
-            unique_tasks.append(task)
+        if task_key in seen_tasks:
+            db.session.delete(task)
+        else:
             seen_tasks.add(task_key)
-    tasks = unique_tasks
+
+    db.session.commit()
+
+    tasks = Task.query.all()
     if not tasks:
         return render_template('no_tasks.html')
     else:
         return render_template('tasks.html', tasks=tasks)
+
+
 
 @user_views.route('/')
 def home():
@@ -186,7 +193,7 @@ def remove_user_role():
         if user and role and role in user.roles:
             user.roles.remove(role)
             # Remove tasks associated with the removed role
-            tasks_to_remove = Task.query.filter_by(assigned_user_id=user_id).join(Task.role).filter(Role.id == role_id).all()
+            tasks_to_remove = Task.query.filter(Task.assigned_users.contains(user)).join(Task.role).filter(Role.id == role_id).all()
             for task in tasks_to_remove:
                 db.session.delete(task)
             db.session.commit()
@@ -310,7 +317,10 @@ def download_attachment(filename):
 @login_required
 def update_status(task_id):
     task = Task.query.get(task_id)
-    if not task or not (current_user.has_roles('Admin') or current_user.id == task.assigned_user_id):
+    if not task or not (
+    current_user.has_roles('Admin') 
+    or current_user.id in [user.id for user in task.assigned_users]
+    or current_user == task.role.leader):
         flash("You don't have permission to update this task.")
         return redirect(url_for('user_views.view_tasks'))
     new_status = request.form.get('status')
