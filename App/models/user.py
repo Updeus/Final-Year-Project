@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy='dynamic'))
     comments = relationship("Comment", back_populates="user")
+    #assigned_tasks_user = db.relationship('Task', secondary='task_assignments', backref='assigned_users')
 
     def __init__(self, username, email, password):
         self.username = username
