@@ -1,4 +1,6 @@
 import os
+import io
+from flask import send_file
 from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory, json
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -304,7 +306,7 @@ def add_comment(task_id):
 
         if attachment and allowed_file(attachment.filename):
             filename = secure_filename(attachment.filename)
-            attachment.save(os.path.join('App/uploads', filename))
+            attachment.save(os.path.join('App/views/uploads', filename))
         else:
             filename = None
 
@@ -344,16 +346,28 @@ def resources():
 
     return render_template('resources.html', events=events_json)
 
-@user_views.route('/tasks/comments/attachments/<string:filename>', methods=['GET'])
-@login_required
-def download_attachment(filename):
+def send_attachment_file(file_path, filename):
     try:
-        base_dir = os.path.abspath(os.path.dirname(__file__))
-        upload_dir = os.path.join(base_dir, 'App', 'uploads')
-        return send_from_directory(directory=upload_dir, path=filename, as_attachment=True)
+        with open(file_path, 'rb') as f:
+            os.chmod(file_path, 0o755)  # Set file permissions to make it readable
+            data = io.BytesIO(f.read())
+        return send_file(data, attachment_filename=filename, as_attachment=True)
     except FileNotFoundError:
         flash('The file was not found.')
         return redirect(request.referrer)
+
+
+
+@user_views.route('/tasks/comments/attachments/<string:filename>', methods=['GET'])
+@login_required
+def download_attachment(filename):
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    upload_dir = os.path.join(base_dir, 'uploads')
+    file_path = os.path.join(upload_dir, filename)
+    print(f"File path: {file_path}")  # Add this line to print the file path
+    return send_attachment_file(file_path, filename)
+
+
 
 
 
