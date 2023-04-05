@@ -179,7 +179,8 @@ img.hover-shadow {
     
     {% if current_user.has_roles('Admin') %}
     
-    <button class="dropbtn" href="{{ url_for('user_views.assign_task') }}">Delegate Tasks</button>
+    <a class="dropbtn" href="{{ url_for('user_views.assign_task') }}
+    ">Delegate Tasks</a>
     
     <div class="dropdown">
       <button class="dropbtn">Role Management</button>
