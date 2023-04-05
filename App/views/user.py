@@ -292,7 +292,7 @@ def signup():
 @login_required
 def add_comment(task_id):
     task = Task.query.get(task_id)
-    if not task or task.assigned_user_id != current_user.id:
+    if not task or (not current_user.has_roles('Admin') and current_user not in task.assigned_users):
         flash("You don't have permission to access this task.")
         return redirect(url_for('user_views.view_tasks'))
 
@@ -318,8 +318,7 @@ def add_comment(task_id):
 
     comments = Comment.query.filter_by(task_id=task_id).order_by(Comment.timestamp.desc()).all()
 
-    return render_template('tasks.html', task=task, comments=comments)
-
+    return render_template('task_details.html', task=task, comments=comments)
 
 
 @user_views.route('/resources', methods=['GET'])
@@ -345,14 +344,19 @@ def resources():
 
     return render_template('resources.html', events=events_json)
 
-@user_views.route('/tasks/comments/attachments/<path:filename>', methods=['GET'])
+@user_views.route('/tasks/comments/attachments/<string:filename>', methods=['GET'])
 @login_required
 def download_attachment(filename):
     try:
-        return send_from_directory(directory='App/uploads', filename=filename, as_attachment=True)
+        base_dir = os.path.abspath(os.path.dirname(__file__))
+        upload_dir = os.path.join(base_dir, 'App', 'uploads')
+        return send_from_directory(directory=upload_dir, path=filename, as_attachment=True)
     except FileNotFoundError:
         flash('The file was not found.')
         return redirect(request.referrer)
+
+
+
 
 
 @user_views.route('/tasks/<int:task_id>/update_status', methods=['POST'])
@@ -375,3 +379,11 @@ def update_status(task_id):
 
     flash('Task status updated successfully.')
     return redirect(url_for('user_views.view_tasks'))
+
+@user_views.route('/task_details/<int:task_id>')
+@login_required
+def task_details(task_id):
+    task = Task.query.get_or_404(task_id)
+    comments = Comment.query.filter_by(task_id=task_id).all()
+    return render_template('task_details.html', task=task, comments=comments)
+
