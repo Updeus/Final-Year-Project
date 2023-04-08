@@ -144,6 +144,9 @@ img.hover-shadow {
   height: 100vh;
   background-image: url("{{url_for('static', filename='landing.png')}}");
   background-size:cover;
+  margin-left: -20%;
+  width:100vw;
+  
 
 }
 
@@ -185,7 +188,7 @@ img.hover-shadow {
     {% if current_user.is_authenticated %}
   <!----  <button class="dropbtn" href="{{ url_for('user_views.view_tasks') }}">View Tasks</button> 
     <button class="dropbtn" href="{{ url_for('user_views.user_settings') }}">User Settings</button> -->
-    <h2 style="text-align:center">Welcome to DCIT Department Assistant</h2>
+    <h2 style="text-align:center">Welcome to Task Tracker</h2>
     {% if current_user.has_roles('Admin') %}
    <br>
     <div class ="adminpanel">
@@ -207,7 +210,7 @@ img.hover-shadow {
     {% endif %}
     {% else %}
     
-    <div class= "landing">\
+    <div class= "landing">
       <h2 style="color:white"> Welcome to DCIT Task Tracker </h2>
     <a class="btn btn-primary mt-3" href="{{ url_for('user_views.login') }}">Login</a>
     <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.signup') }}">Sign Up</a>
