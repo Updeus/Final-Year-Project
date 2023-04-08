@@ -32,8 +32,8 @@
 
 img {
   height: 50vh;
-  padding: 10px;
-  background-color:#B6C4D5;
+  padding: 1px;
+  
  
   
 }
@@ -42,6 +42,9 @@ img:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 100px 0 rgba(0, 0, 0, 0.19);
 }
 
+h2{
+  color:white;
+}
   
 .overlay {
   position: absolute; 
@@ -95,7 +98,7 @@ img.hover-shadow {
   font-size: 16px;
   border: none;
   border-radius: 10px;
-  padding-right: 50px;
+  padding-right: 30px;
 }
 
 .dropdown {
@@ -136,33 +139,41 @@ img.hover-shadow {
   height: 20px;
 }
 
-.img2{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: white;
+.landing{
+  text-align: center;
+  height: 100vh;
+  background-image: url("{{url_for('static', filename='landing.png')}}");
+  background-size:cover;
+
+}
+
+.adminpanel{
+  text-align: center;
+  background-color: #99beec;
+  margin-left: 20%;
+  margin-right: 20%;
+  height: auto;
+  padding: 10px;
+  outline:#abafd5 solid 4px;
   
 }
+
+
+
 
 
   </style>
 
 
 {% extends "layout.html" %}
-{% block title %}DCIT Department Assistant{% endblock %}
-{% block page %}DCIT Department Assistant{% endblock %}
+{% block title %}DCIT Task Tracker{% endblock %}
+{% block page %}DCIT Task Tracker{% endblock %}
 {{ super() }}
 
 
 {% block content %}
 <body>
-
-    
-   
-
   
-    </div>
-  </nav>
   <div class="container">
     <!-- ... -->
     {% if current_user.is_authenticated %}
@@ -170,35 +181,40 @@ img.hover-shadow {
     {% endif %}
   </div>
 
-  <h2 style="text-align:center">Welcome to DCIT Department Assistant</h2>
-  <br>
-  <div class="container" style="float: right; left: 20vh; padding-bottom: 20px;"> 
+ 
     {% if current_user.is_authenticated %}
   <!----  <button class="dropbtn" href="{{ url_for('user_views.view_tasks') }}">View Tasks</button> 
     <button class="dropbtn" href="{{ url_for('user_views.user_settings') }}">User Settings</button> -->
-    
+    <h2 style="text-align:center">Welcome to DCIT Department Assistant</h2>
     {% if current_user.has_roles('Admin') %}
-    
-    <a class="dropbtn" href="{{ url_for('user_views.assign_task') }}
-    ">Delegate Tasks</a>
+   <br>
+    <div class ="adminpanel">
+      <h3> Admin Panel </h3>
+    <a class="dropbtn" href="{{ url_for('user_views.assign_task') }}">Delegate Tasks</a>
     
     <div class="dropdown">
-      <button class="dropbtn">Role Management</button>
-      <div class="dropdown-content">
-        <a href="{{ url_for('user_views.create_role') }}">Create Role</a>
-        <a href="{{ url_for('user_views.delegate_role') }}">Delegate Role to User</a>
-        <a href="{{ url_for('user_views.remove_user_role') }}">Remove Role from User</a>
-        <a href="{{ url_for('user_views.remove_role') }}">Delete Role</a>
-        <a href="{{ url_for('user_views.remove_task') }}">Remove Task from Role</a>
+      <button class="dropbtn">Committee Management</button>
+      <div class="dropdown-content" style="text-align: left">
+        <a href="{{ url_for('user_views.create_role') }}">Add New Committee</a>
+        <a href="{{ url_for('user_views.delegate_role') }}">Delegate Committee to User</a>
+        <a href="{{ url_for('user_views.remove_user_role') }}">Remove Committee from User</a>
+        <a href="{{ url_for('user_views.remove_role') }}">Delete Committee</a>
+        <a href="{{ url_for('user_views.remove_task') }}">Remove Task from Committee</a>
 
       </div>
     </div>
+  </div>
     {% endif %}
     {% else %}
     
+    <div class= "landing">\
+      <h2 style="color:white"> Welcome to DCIT Task Tracker </h2>
     <a class="btn btn-primary mt-3" href="{{ url_for('user_views.login') }}">Login</a>
     <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.signup') }}">Sign Up</a>
     <br>
+   
+  </div>
+    
     
 
 

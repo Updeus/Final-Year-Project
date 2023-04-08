@@ -1,27 +1,29 @@
 <!-- no_tasks.html -->
 <!doctype html>
 <html>
+  
+{% extends "layout.html" %}
+{% block title %}DCIT Task Tracker{% endblock %}
+{% block page %}DCIT Task Tracker{% endblock %}
+{{ super() }}
+
+
+{% block content %}
   <head>
     <title>No Tasks</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   </head>
+
+  <style>
+    body{
+      color:white;
+    }
+    </style>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Task Delegation App</a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav mr-auto">
-          {% if current_user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('user_views.logout') }}">Logout</a>
-            <a class="nav-link" href="{{ url_for('user_views.home') }}">Home</a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-    </nav>
-    <div class="container">
+    <div class="container" style="height: 100vh">
       <h1 class="mt-5">No tasks were given</h1>
       <a class="btn btn-primary mt-3" href="{{ url_for('user_views.home') }}">Go to Home</a>
     </div>
   </body>
+  {% endblock %}
 </html>
