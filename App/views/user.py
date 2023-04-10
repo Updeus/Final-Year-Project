@@ -69,31 +69,34 @@ def assign_task():
 @login_required
 def view_tasks():
     date = request.args.get('date')
+    
     if current_user.has_roles('Admin'):
         tasks = Task.query.all()
     else:
-        tasks = get_user_role_tasks(current_user.id)
-        role_leader_tasks = Task.query.join(Task.role).filter(and_(Role.leader_id == current_user.id, Task.assigned_users.any(User.id != current_user.id))).all()
-        tasks = [task for task in tasks if task not in role_leader_tasks]
+        tasks = []
+        user_roles = current_user.roles
+        for role in user_roles:
+            tasks.extend(role.tasks)
+    
     if date:
         tasks = [task for task in tasks if task.due_date == date]
 
     # Remove duplicate tasks from the database
     seen_tasks = set()
+    unique_tasks = []
     for task in tasks:
         task_key = (task.title, task.description, task.due_date)
-        if task_key in seen_tasks:
-            db.session.delete(task)
-        else:
+        if task_key not in seen_tasks:
             seen_tasks.add(task_key)
+            unique_tasks.append(task)
 
-    db.session.commit()
-
-    tasks = Task.query.all()
+    tasks = unique_tasks
     if not tasks:
         return render_template('no_tasks.html')
     else:
         return render_template('tasks.html', tasks=tasks)
+
+
 
 
 
