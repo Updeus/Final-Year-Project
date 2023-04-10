@@ -10,6 +10,9 @@ from App.models import User, Role, Task, UserRoles, Comment
 from App.models.task import get_user_role_tasks, get_tasks_by_user
 from datetime import datetime
 from sqlalchemy import and_
+from flask import make_response
+from App.utils import generate_pdf_report
+
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
@@ -54,15 +57,24 @@ def assign_task():
     due_date = datetime.strptime(request.form.get('due_date'), '%Y-%m-%d')
     role = Role.query.filter_by(name=role_name).first()
 
+    assigned_date = datetime.utcnow()  # Add this line to get the current time
+
     for user in role.users:
         task = Task(title=title, description=description, due_date=due_date)
-        task.assigned_users.append(user)
+        task.assignments.append(user)
         task.role = role
         db.session.add(task)
+        db.session.flush()  # Flush the session to get the task ID
+
+        # Set the assigned date using the setter
+        task.assigned_date = assigned_date
 
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
+
+
+
 
 
 @user_views.route('/tasks', methods=['GET'])
@@ -330,7 +342,13 @@ def update_status(task_id):
     if new_status not in ['To Do', 'Ongoing', 'Completed']:
         flash('Invalid status.')
         return redirect(request.referrer)
+    
     task.status = new_status
+    if new_status == 'Completed':
+        task.completed_date = datetime.utcnow()  # Set the completed_date when the status is 'Completed'
+    else:
+        task.completed_date = None  # Reset the completed_date when the status is not 'Completed'
+    
     db.session.commit()
     flash('Task status updated successfully.')
     return redirect(url_for('user_views.view_tasks'))
@@ -341,3 +359,28 @@ def task_details(task_id):
     task = Task.query.get_or_404(task_id)
     comments = Comment.query.filter_by(task_id=task_id).all()
     return render_template('task_details.html', task=task, comments=comments)
+
+@user_views.route('/reports', methods=['GET', 'POST'])
+@login_required
+def generate_report():
+    if request.method == 'POST':
+        start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
+        end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')
+
+        if current_user.has_roles('Admin'):
+            tasks = Task.query.filter(Task.due_date >= start_date, Task.due_date <= end_date).all()
+        else:
+            tasks = []
+            user_roles = current_user.roles
+            for role in user_roles:
+                role_tasks = Task.query.filter(Task.role_id == role.id, Task.due_date >= start_date, Task.due_date <= end_date).all()
+                tasks.extend(role_tasks)
+
+        pdf_data = generate_pdf_report(tasks)
+        response = make_response(pdf_data)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=report_{start_date.strftime("%Y-%m-%d")}_to_{end_date.strftime("%Y-%m-%d")}.pdf'
+
+        return response
+
+    return render_template('reports.html')
