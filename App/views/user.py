@@ -12,6 +12,10 @@ from datetime import datetime
 from sqlalchemy import and_
 from flask import make_response
 from App.utils import generate_pdf_report
+from flask_mail import Mail, Message
+from ..email_utils import send_task_assignment_email
+from flask import current_app
+
 
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
@@ -69,9 +73,13 @@ def assign_task():
         # Set the assigned date using the setter
         task.assigned_date = assigned_date
 
+        # Send an email notification to the user
+        #send_task_assignment_email(current_app.mail, task, user)
+
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
+
 
 
 
@@ -107,10 +115,6 @@ def view_tasks():
         return render_template('no_tasks.html')
     else:
         return render_template('tasks.html', tasks=tasks)
-
-
-
-
 
 @user_views.route('/')
 def landing():

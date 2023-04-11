@@ -6,9 +6,10 @@ from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
 from App.database import db
 from werkzeug.utils import secure_filename
-from werkzeug.datastructures import  FileStorage
+from werkzeug.datastructures import FileStorage
 from datetime import timedelta
-
+from flask_mail import Mail, Message
+from .email_utils import send_task_assignment_email, send_due_date_reminder_email
 
 from App.database import create_db, get_migrate
 
@@ -20,8 +21,6 @@ from App.views import (
     user_views
 )
 
-# New views must be imported and added to this list
-
 views = [
     user_views
 ]
@@ -29,7 +28,6 @@ views = [
 def add_views(app, views):
     for view in views:
         app.register_blueprint(view)
-
 
 def loadConfig(app, config):
     app.config['ENV'] = os.environ.get('ENV', 'DEVELOPMENT')
@@ -43,13 +41,18 @@ def loadConfig(app, config):
         app.config['DEBUG'] = os.environ.get('ENV').upper() != 'PRODUCTION'
         app.config['ENV'] = os.environ.get('ENV')
         delta = os.environ.get('JWT_EXPIRATION_DELTA', 7)
-    
+
     app.config['USER_EMAIL_SENDER_EMAIL'] = os.environ.get('USER_EMAIL_SENDER_EMAIL', 'noreply@example.com')
     app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=int(delta))
+    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+    app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'info3604taskassignment@gmail.com')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'E@rwYE262@s1vi3WC*u*')
 
     for key, value in config.items():
         app.config[key] = config[key]
-
+        
 def create_admin_account(app):
     with app.app_context():
         admin_username = "Admin"
@@ -99,7 +102,6 @@ def create_roles(app):
                 role = Role(name=role_name)
                 db.session.add(role)
                 db.session.commit()
-
 def create_app(config={}):
     app = Flask(__name__, static_url_path='/static')
     CORS(app)
@@ -112,6 +114,8 @@ def create_app(config={}):
     configure_uploads(app, photos)
     add_views(app, views)
     create_db(app)
+    mail = Mail(app)
+    app.mail = mail  # Attach the mail object to the app instance
     login_manager=LoginManager(app)
     login_manager.init_app(app)
     migrate=get_migrate(app)
@@ -129,17 +133,18 @@ def create_app(config={}):
     app.jinja_env.filters['tojson'] = tojson_filter
     return app
 
-app=create_app()
-app=Flask(__name__)
-login_manager=LoginManager(app) 
+app = create_app()
+login_manager = LoginManager(app)
 login_manager.init_app(app)
-migrate=get_migrate(app)
+migrate = get_migrate(app)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
+
