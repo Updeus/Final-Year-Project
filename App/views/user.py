@@ -74,7 +74,7 @@ def assign_task():
         task.assigned_date = assigned_date
 
         # Send an email notification to the user
-        #send_task_assignment_email(current_app.mail, task, user)
+        send_task_assignment_email(current_app.mail, task, user)
 
     db.session.commit()
 

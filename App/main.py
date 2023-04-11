@@ -42,13 +42,14 @@ def loadConfig(app, config):
         app.config['ENV'] = os.environ.get('ENV')
         delta = os.environ.get('JWT_EXPIRATION_DELTA', 7)
 
-    app.config['USER_EMAIL_SENDER_EMAIL'] = os.environ.get('USER_EMAIL_SENDER_EMAIL', 'noreply@example.com')
+    app.config['USER_EMAIL_SENDER_EMAIL'] = os.environ.get('USER_EMAIL_SENDER_EMAIL', 'info3604taskassignment@gmail.com')
     app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=int(delta))
-    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.mailgun.org')
     app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'info3604taskassignment@gmail.com')
-    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'E@rwYE262@s1vi3WC*u*')
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'postmaster@sandbox24c386880dc2424cb08ecffb534de668.mailgun.org')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', '130cfabe5f42b4678b9bd0fc5f5a00bc-2cc48b29-91a468ac')
+
 
     for key, value in config.items():
         app.config[key] = config[key]
