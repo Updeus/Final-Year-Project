@@ -14,17 +14,21 @@
     <title>{% block title %}{% endblock %}</title>
   </head>
   <style>
+  
   nav{
-    background-image: url("{{url_for('static', filename='landing.png')}}");
+  background-image: url("{{url_for('static', filename='landing.png')}}");
   background-size:cover;
 
   }
  
   body{
     background-image: linear-gradient(to bottom right, #0f2459 ,#275abf) ;
+    height: 100vh;
+    color: white;
   }
     </style>
     
+
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="{{ url_for('user_views.home') }}">{% block page %}DCIT Task Tracker{% endblock %}</a>

@@ -113,6 +113,10 @@ def view_tasks():
 
 
 @user_views.route('/')
+def landing():
+    return render_template('landing.html')
+
+@user_views.route('/home')
 def home():
     return render_template('home.html')
 
