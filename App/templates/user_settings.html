@@ -6,59 +6,127 @@
   {% block page %}DCIT Department Assistant{% endblock %}
   {{ super() }}
   
-  
   {% block content %}
-<head>
+  <head>
     <title>User Settings</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
+    <!-- Bootstrap stylesheet and JavaScript -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
+    <!-- Custom stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
 
-<style>
-  body{
-    color:white;
-  }
-  </style>
+    
+    <style>
+      /* style.css */
 
-<body>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <div class="container mt-2">
-    <div class="alert alert-info">
-      <ul class="mb-0">
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    </div>
-  </div>
-  {% endif %}
-  {% endwith %}
+body {
+  background-color: #303030;
+  font-family: sans-serif;
+}
 
-  <div class="container"  id="content"></div>
-    <div class="container" style="height: 100vh">
-        <h1 class="mt-5" >User Settings</h1>
-        {% for message in get_flashed_messages() %}
-        <p>{{ message }}</p>
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 36px;
+  color:#ffffff;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  color:#ffffff;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  display: block;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  background-color: #ffffff;
+  color: black;
+}
+
+input[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+}
+
+.alert-info {
+  background-color: #007bff;
+}
+
+ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+    </style>
+  </head>
+
+  <body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="container mt-2">
+      <div class="alert alert-info">
+        <ul class="mb-0">
+        {% for message in messages %}
+          <li>{{ message }}</li>
         {% endfor %}
-        <form method="POST" action="{{ url_for('user_views.user_settings') }}">
-            <label for="username">New Username:</label>
-            <input type="text" name="username" value="{{ current_user.username }}"><br>
-            <label for="email">New Email:</label>
-            <input type="email" name="email" value="{{ current_user.email }}"><br>
-            <label for="password">New Password:</label>
-            <input type="password" name="password"><br>
-            <input type="submit" value="Update Settings" class="btn btn-primary mt-3">
-        </form>
+        </ul>
+      </div>
     </div>
+    {% endif %}
+    {% endwith %}
 
-</body>
-{% endblock %}
+    <div class="container" id="content"></div>
+    <div class="container" style="height: 100vh">
+      <h1 class="mt-5">User Settings</h1>
+      <br><br>
+      {% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+      {% endfor %}
+      <form method="POST" action="{{ url_for('user_views.user_settings') }}">
+        <label for="username">New Username:</label>
+        <input type="text" name="username" value="{{ current_user.username }}"><br>
+        <label for="email">New Email:</label>
+        <input type="email" name="email" value="{{ current_user.email }}"><br>
+        <label for="password">New Password:</label>
+        <input type="password" name="password"><br>
+        <input type="submit" value="Update Settings" class="btn btn-primary mt-3">
+      </form>
+    </div>
+  </body>
+  {% endblock %}
 </html>
