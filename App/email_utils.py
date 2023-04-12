@@ -3,6 +3,9 @@ from cryptography.fernet import Fernet
 from App.models import User
 from flask_mail import Message
 import requests
+from App.database import db
+from App.models import Task, task_assignments
+
 
 def get_decrypted_value(key_name):
     # Load the encryption key from the "keys" folder
@@ -45,9 +48,13 @@ def send_task_assignment_email(mail, task, user):
         body = f"Dear {user.username},\n\nYou have been assigned a new task: {task.title}\nDue Date: {task.due_date}\n\nTask Details: {task.description}\n\nPlease make sure to complete the task before the due date."
         send_email_via_mailgun_api([user.email], subject, body)
 
-def send_due_date_reminder_email(mail, task):
-    user = User.query.get(task.user_id)
-    if user and user.email:
-        subject = "Task Due Date Reminder: {}".format(task.title)
-        body = f"Dear {user.username},\n\nThis is a reminder that the due date for your task '{task.title}' is today.\n\nTask Details: {task.description}\n\nPlease make sure to complete the task as soon as possible."
-        send_email(mail, subject, [user.email], body)
+def send_due_date_reminder_email(task):
+    task_assignment = db.session.query(task_assignments).filter_by(task_id=task.id).first()
+    if task_assignment:
+        user = User.query.get(task_assignment.user_id)
+        if user and user.email:
+            subject = "Task Due Date Reminder: {}".format(task.title)
+            body = f"Dear {user.username},\n\nThis is a reminder that the due date for your task '{task.title}' is due within 7 days.\n\nTask Details: {task.description}\n\nPlease make sure to complete the task as soon as possible."
+            send_email_via_mailgun_api([user.email], subject, body)
+
+

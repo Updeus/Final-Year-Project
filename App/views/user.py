@@ -14,7 +14,7 @@ from sqlalchemy import and_
 from flask import make_response
 from App.utils import generate_pdf_report, get_tasks_for_report_type, get_all_tasks_for_user
 from flask_mail import Mail, Message
-from ..email_utils import send_task_assignment_email
+from ..email_utils import send_task_assignment_email, send_due_date_reminder_email
 from flask import current_app
 
 
@@ -81,19 +81,20 @@ def assign_task():
 
     return redirect(url_for('user_views.view_tasks'))
 
+
 @user_views.route('/tasks', methods=['GET'])
 @login_required
 def view_tasks():
     date = request.args.get('date')
-    
+    tasks = []
+
     if current_user.has_roles('Admin'):
         tasks = Task.query.all()
     else:
-        tasks = []
         user_roles = current_user.roles
         for role in user_roles:
             tasks.extend(role.tasks)
-    
+
     if date:
         tasks = [task for task in tasks if task.due_date == date]
 
@@ -107,9 +108,19 @@ def view_tasks():
             unique_tasks.append(task)
 
     tasks = unique_tasks
+
     if not tasks:
         return render_template('no_tasks.html')
+    
     else:
+        # Get current date and time
+        now = datetime.now()
+
+        # Check each task and send a reminder email if necessary
+        for task in tasks:
+            if task.status != 'Completed'  and task.due_date <= now + timedelta(days=7):
+                send_due_date_reminder_email(task)
+
         return render_template('tasks.html', tasks=tasks)
 
 @user_views.route('/')
@@ -293,6 +304,8 @@ def add_comment(task_id):
     comments = Comment.query.filter_by(task_id=task_id).order_by(Comment.timestamp.desc()).all()
     return render_template('task_details.html', task=task, comments=comments)
 
+from datetime import datetime, timedelta
+
 @user_views.route('/resources', methods=['GET'])
 @login_required
 def resources():
@@ -307,11 +320,13 @@ def resources():
             'title': task.title.replace("12a", ""),
             'start': task.due_date.isoformat().replace("12a", ""),
             'end': task.due_date.isoformat().replace("12a", ""),
+            'className': 'red-event' if task.due_date <= datetime.today() + timedelta(days=7) else ''
         }
         events.append(event)
     # Convert the events list to a JSON object
     events_json = json.dumps(events)
     return render_template('resources.html', events=events_json)
+
 
 def send_attachment_file(file_path, filename):
     try:
