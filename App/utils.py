@@ -63,7 +63,7 @@ def generate_pdf_report(tasks, report_type, current_user):
   <h2>Status: {{ status }}</h2>
   <table>
     <tr>
-      <th>Role</th>
+      <th>Committee</th>
       <th>Title</th>
       <th>Description</th>
       <th>Due Date</th>
@@ -87,7 +87,7 @@ def generate_pdf_report(tasks, report_type, current_user):
   {% else %}
   <table>
     <tr>
-      <th>Role</th>
+      <th>Committee</th>
       <th>Title</th>
       <th>Description</th>
       <th>Due Date</th>

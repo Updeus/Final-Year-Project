@@ -35,10 +35,10 @@
 
 </script>
 <div class="container">
-    <h2 class="mb-4">Remove Task from Role</h2>
+    <h2 class="mb-4">Remove Task from Committee</h2>
     <form method="POST">
         <div class="form-group">
-            <label for="role_id">Select Role:</label>
+            <label for="role_id">Select Committee:</label>
             <select class="form-control" id="role_id" name="role_id" onchange="updateTasksDropdown()">
                 <option value="">Select a role</option>
                 {% for role in roles %}

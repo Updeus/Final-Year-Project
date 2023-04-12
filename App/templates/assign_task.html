@@ -1,12 +1,12 @@
 <!-- assign_task.html -->
 {% extends "layout.html" %}
 {% block content %}
-<h1>Assign Task to Users by Role</h1>
+<h1>Assign Task to Users by Committee</h1>
 <form method="POST" action="{{ url_for('user_views.assign_task') }}">
     <div class="form-group">
-        <label for="role_name">Role</label>
+        <label for="role_name">Committee</label>
         <select class="form-control" id="role_name" name="role_name" required>
-            <option value="" disabled selected>Select Role</option>
+            <option value="" disabled selected>Select Committee</option>
             {% for role in roles %}
             <option value="{{ role.name }}">{{ role.name }}</option>
             {% endfor %}

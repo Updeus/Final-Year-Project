@@ -28,9 +28,9 @@
     <option value="{{ user.id }}">{{ user.username }}</option>
     {% endfor %}
   </select>
-  <label for="role_id">Role (for Full Committee Report):</label>
+  <label for="role_id">Committee (for Full Committee Report):</label>
   <select id="role_id" name="role_id">
-    <option value="">Select Role</option>
+    <option value="">Select Committee</option>
     {% for role in roles %}
     <option value="{{ role.id }}">{{ role.name }}</option>
     {% endfor %}
