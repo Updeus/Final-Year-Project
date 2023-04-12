@@ -64,12 +64,13 @@ def assign_task():
 
     assigned_date = datetime.utcnow()  # Add this line to get the current time
 
+    task = Task(title=title, description=description, due_date=due_date)
+    task.role = role
+    db.session.add(task)
+    db.session.flush()  # Flush the session to get the task ID
+
     for user in role.users:
-        task = Task(title=title, description=description, due_date=due_date)
         task.assignments.append(user)
-        task.role = role
-        db.session.add(task)
-        db.session.flush()  # Flush the session to get the task ID
 
         # Set the assigned date using the setter
         task.assigned_date = assigned_date
@@ -80,6 +81,7 @@ def assign_task():
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
+
 
 
 @user_views.route('/tasks', methods=['GET'])
