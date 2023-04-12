@@ -1,12 +1,81 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>Generate Report</h1>
-    <form method="post" action="{{ url_for('user_views.generate_report') }}">
-        <label for="start_date">Start Date:</label>
-        <input type="date" id="start_date" name="start_date" required>
-        <label for="end_date">End Date:</label>
-        <input type="date" id="end_date" name="end_date" required>
-        <button type="submit">Generate Report</button>
-    </form>
+<h1>Generate Report</h1>
+<form method="post" action="{{ url_for('user_views.generate_report') }}">
+  <label for="report_type">Report Type:</label>
+  <select id="report_type" name="report_type" onchange="reportTypeChanged()" required>
+    <option value="full_committee">Full Committee Report</option>
+    <option value="singular_task">Singular Task Report</option>
+    <option value="singular_user">Singular User Report</option>
+  </select>
+  <label for="start_date">Start Date:</label>
+  <input type="date" id="start_date" name="start_date" required>
+  <label for="end_date">End Date:</label>
+  <input type="date" id="end_date" name="end_date" required>
+  <label for="task_id">Task (for Singular Task Report):</label>
+  <select id="task_id" name="task_id" disabled>
+    <option value="">Select Task</option>
+    {% for task in tasks %}
+    <option value="{{ task.id }}">{{ task.title }}</option>
+    {% endfor %}
+  </select>
+  {% if current_user.has_roles('Admin') %}
+  <label for="user_id">User (for Singular User Report):</label>
+  <select id="user_id" name="user_id">
+    <option value="">Select User</option>
+    {% for user in users %}
+    <option value="{{ user.id }}">{{ user.username }}</option>
+    {% endfor %}
+  </select>
+  <label for="role_id">Role (for Full Committee Report):</label>
+  <select id="role_id" name="role_id">
+    <option value="">Select Role</option>
+    {% for role in roles %}
+    <option value="{{ role.id }}">{{ role.name }}</option>
+    {% endfor %}
+  </select>
+  {% endif %}
+  <button type="submit">Generate Report</button>
+</form>
+
+<script>
+function reportTypeChanged() {
+  const reportTypeSelect = document.getElementById("report_type");
+  const startDateInput = document.getElementById("start_date");
+  const endDateInput = document.getElementById("end_date");
+  const taskSelect = document.getElementById("task_id");
+  const userSelect = document.getElementById("user_id");
+  const roleSelect = document.getElementById("role_id");
+
+  const singularTaskSelected = reportTypeSelect.value === "singular_task";
+  const singularUserSelected = reportTypeSelect.value === "singular_user";
+  const fullCommitteeSelected = reportTypeSelect.value === "full_committee";
+
+  startDateInput.required = !singularTaskSelected;
+  endDateInput.required = !singularTaskSelected;
+  startDateInput.disabled = singularTaskSelected;
+  endDateInput.disabled = singularTaskSelected;
+  taskSelect.disabled = !singularTaskSelected;
+
+  if (userSelect) {
+    userSelect.disabled = !singularUserSelected;
+  }
+
+  if (roleSelect) {
+    roleSelect.disabled = !fullCommitteeSelected;
+  }
+}
+
+
+// Call the function initially to set the correct state on page load
+reportTypeChanged();
+</script>
+
+<h2>Previous Reports</h2>
+<ul>
+  {% for report in reports %}
+  <li><a href="{{ url_for('user_views.download_attachment', filename=report.filename) }}">{{ report.filename }}</a></li>
+  {% endfor %}
+</ul>
 {% endblock %}

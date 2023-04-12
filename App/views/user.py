@@ -1,17 +1,18 @@
 import os
 import io
+import uuid
 from flask import send_file
 from flask import Blueprint, Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory, json
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from App.database import db
-from App.models import User, Role, Task, UserRoles, Comment
+from App.models import User, Role, Task, UserRoles, Comment, Report
 from App.models.task import get_user_role_tasks, get_tasks_by_user
 from datetime import datetime
 from sqlalchemy import and_
 from flask import make_response
-from App.utils import generate_pdf_report
+from App.utils import generate_pdf_report, get_tasks_for_report_type, get_all_tasks_for_user
 from flask_mail import Mail, Message
 from ..email_utils import send_task_assignment_email
 from flask import current_app
@@ -79,11 +80,6 @@ def assign_task():
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
-
-
-
-
-
 
 @user_views.route('/tasks', methods=['GET'])
 @login_required
@@ -372,23 +368,45 @@ def task_details(task_id):
 @login_required
 def generate_report():
     if request.method == 'POST':
-        start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d')
-        end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d')
+        report_type = request.form.get('report_type')
+        
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else None
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
+        
+        task_id = request.form.get('task_id')
+        user_id = request.form.get('user_id')
+        role_id = request.form.get('role_id')
 
-        if current_user.has_roles('Admin'):
-            tasks = Task.query.filter(Task.due_date >= start_date, Task.due_date <= end_date).all()
-        else:
-            tasks = []
-            user_roles = current_user.roles
-            for role in user_roles:
-                role_tasks = Task.query.filter(Task.role_id == role.id, Task.due_date >= start_date, Task.due_date <= end_date).all()
-                tasks.extend(role_tasks)
+        tasks = get_tasks_for_report_type(report_type, task_id, start_date, end_date, current_user, user_id, role_id)
 
-        pdf_data = generate_pdf_report(tasks)
-        response = make_response(pdf_data)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'attachment; filename=report_{start_date.strftime("%Y-%m-%d")}_to_{end_date.strftime("%Y-%m-%d")}.pdf'
+        pdf_data = generate_pdf_report(tasks, report_type, current_user)
 
-        return response
+        date_range_str = f"{start_date.strftime('%Y-%m-%d')}_to_{end_date.strftime('%Y-%m-%d')}" if start_date and end_date else "no_date_range"
+        report_filename = f'{report_type}_report_{date_range_str}_{str(uuid.uuid4())}.pdf'
+        report_path = os.path.join('App', 'views', 'uploads', report_filename)
+        with open(report_path, 'wb') as f:
+            f.write(pdf_data)
 
-    return render_template('reports.html')
+        report = Report(filename=report_filename, user_id=current_user.id)
+        db.session.add(report)
+        db.session.commit()
+
+        flash('Report generated and saved successfully.')
+        return redirect(url_for('user_views.generate_report'))
+
+    if current_user.has_roles('Admin'):
+        reports = Report.query.all()
+        users = User.query.all()
+    else:
+        reports = Report.query.filter_by(user_id=current_user.id).all()
+        users = []
+
+    tasks = get_all_tasks_for_user(current_user)
+    roles = Role.query.all()
+
+    return render_template('reports.html', reports=reports, tasks=tasks, users=users, roles=roles)
+
+
+
