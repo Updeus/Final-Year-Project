@@ -9,9 +9,23 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 
+<style>
+    td{
+        color:white;
+    }
+
+    thead{
+        color:white;
+    }
+
+    .link{
+        color: white;
+    }
+</style>
+
 {% extends "layout.html" %}
-{% block title %}DCIT Department Assistant{% endblock %}
-{% block page %}DCIT Department Assistant{% endblock %}
+{% block title %}DCIT Task Tracker{% endblock %}
+{% block page %}DCIT Task Tracker{% endblock %}
 {{ super() }}
 
 
@@ -34,7 +48,7 @@
             {% for task in tasks %}
             <tr>
                 <td>
-                    <a href="{{ url_for('user_views.task_details', task_id=task.id) }}">{{ task.title }}</a>
+                    <a href="{{ url_for('user_views.task_details', task_id=task.id) }}" style="color:white">{{ task.title }}</a>
                 </td>
                 <td>{{ task.description }}</td>
                 <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>

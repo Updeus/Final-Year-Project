@@ -75,7 +75,7 @@ reportTypeChanged();
 <h2>Previous Reports</h2>
 <ul>
   {% for report in reports %}
-  <li><a href="{{ url_for('user_views.download_attachment', filename=report.filename) }}">{{ report.filename }}</a></li>
+  <li><a href="{{ url_for('user_views.download_attachment', filename=report.filename) }}" style="color:white">{{ report.filename }}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}
