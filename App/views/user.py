@@ -223,7 +223,7 @@ def remove_user_role():
         if user and role and role in user.roles:
             user.roles.remove(role)
             # Remove tasks associated with the removed role
-            tasks_to_remove = Task.query.filter(Task.assigned_users.contains(user)).join(Task.role).filter(Role.id == role_id).all()
+            tasks_to_remove = Task.query.filter(Task.assignments.contains(user)).join(Task.role).filter(Role.id == role_id).all()
             for task in tasks_to_remove:
                 db.session.delete(task)
             db.session.commit()
