@@ -17,3 +17,4 @@ coverage==6.4.4
 xhtml2pdf==0.2.9
 requests
 cryptography
+Flask-Testing

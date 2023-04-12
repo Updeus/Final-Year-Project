@@ -19,6 +19,13 @@ class User(db.Model, UserMixin):
         self.email = email
         self.set_password(password)
 
+    def toJSON(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email
+        }
+        
     def set_password(self, password):
         """Create hashed password."""
         self.password = generate_password_hash(password, method='sha256')
