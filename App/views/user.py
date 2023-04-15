@@ -355,7 +355,7 @@ def update_status(task_id):
     task = Task.query.get(task_id)
     if not task or not (
     current_user.has_roles('Admin') 
-    or current_user.id in [user.id for user in task.assigned_users]
+    or current_user.id in [user.id for user in task.assignments]
     or current_user == task.role.leader):
         flash("You don't have permission to update this task.")
         return redirect(url_for('user_views.view_tasks'))
