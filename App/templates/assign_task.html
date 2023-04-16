@@ -2,6 +2,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>Assign Task to Users by Committee</h1>
+<br><br>
 <form method="POST" action="{{ url_for('user_views.assign_task') }}">
     <div class="form-group">
         <label for="role_name">Committee</label>
