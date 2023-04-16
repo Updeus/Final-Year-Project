@@ -2,6 +2,7 @@
 
 {% block content %}
 <h1>Generate Report</h1>
+<br><br>
 <form method="post" action="{{ url_for('user_views.generate_report') }}">
   <label for="report_type">Report Type:</label>
   <select id="report_type" name="report_type" onchange="reportTypeChanged()" required>
@@ -72,6 +73,49 @@ function reportTypeChanged() {
 reportTypeChanged();
 </script>
 
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 80%;
+    max-width: 600px;
+  }
+  
+  label {
+    margin-right: 5px;
+  }
+  
+  select, input[type="date"] {
+    padding: 5px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 3px #ccc;
+  }
+  
+  select[disabled], select[disabled] option {
+    color: #999;
+  }
+  
+  button[type="submit"] {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0069d9;
+  }
+  </style>
+
+<br>
 <h2>Previous Reports</h2>
 <ul>
   {% for report in reports %}
