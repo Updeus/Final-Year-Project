@@ -178,7 +178,7 @@ img.hover-shadow {
     <button class="dropbtn" href="{{ url_for('user_views.user_settings') }}">User Settings</button> -->
     <h2 style="text-align:center">Welcome to Task Tracker</h2>
     {% if current_user.has_roles('Admin') %}
-   <br>
+   <br><br>
     <div class ="adminpanel">
       <h3> Admin Panel </h3>
     <a class="dropbtn" href="{{ url_for('user_views.assign_task') }}">Delegate Tasks</a>
