@@ -152,8 +152,6 @@ img.hover-shadow {
 
 
 
-
-
   </style>
 
 
@@ -166,6 +164,8 @@ img.hover-shadow {
 {% block content %}
 <body>
   
+  <img src="{{url_for('static', filename='crest.png')}}" style="width: 115px;height:115px;position:absolute;top: 0;left: -150px;" >
+
   <div class="container">
     <!-- ... -->
     {% if current_user.is_authenticated %}
