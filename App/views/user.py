@@ -135,6 +135,8 @@ def landing():
 def home():
     return render_template('home.html')
 
+from flask import jsonify
+
 @user_views.route('/admin/remove_task', methods=['GET', 'POST'])
 @login_required
 def remove_task():
@@ -143,6 +145,7 @@ def remove_task():
         return redirect(url_for('user_views.home'))
     roles = Role.query.all()
     tasks = Task.query.all()
+
     if request.method == 'POST':
         task_id = request.form.get('task_id')
         task = Task.query.get(task_id)
@@ -153,7 +156,29 @@ def remove_task():
             flash('Task removed successfully.')
         else:
             flash('Task not found.')
+
     return render_template('remove_task.html', roles=roles, tasks=tasks)
+
+@user_views.route('/admin/tasks_by_role', methods=['POST'])
+@login_required
+def tasks_by_role():
+    if not current_user.has_roles('Admin'):
+        return jsonify({"error": "You are not authorized to access this page."}), 403
+
+    role_id = request.form.get('role_id')
+    tasks = Task.query.filter_by(role_id=role_id).all()
+
+    tasks_data = []
+
+    for task in tasks:
+        tasks_data.append({
+            'id': task.id,
+            'title': task.title,
+            'role_name': task.role.name
+        })
+
+    return jsonify(tasks_data)
+
 
 @user_views.route('/admin/create_role', methods=['GET', 'POST'])
 @login_required
