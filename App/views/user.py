@@ -62,7 +62,10 @@ def assign_task():
     due_date = datetime.strptime(request.form.get('due_date'), '%Y-%m-%d')
     role = Role.query.filter_by(name=role_name).first()
 
-    assigned_date = datetime.utcnow()  # Add this line to get the current time
+    # Check if the due date is in the past
+    if due_date < datetime.utcnow():
+        flash("The due date cannot be in the past.")
+        return redirect(url_for('user_views.assign_task'))
 
     task = Task(title=title, description=description, due_date=due_date)
     task.role = role
@@ -71,13 +74,12 @@ def assign_task():
 
     for user in role.users:
         task.assignments.append(user)
-
         # Set the assigned date using the setter
-        task.assigned_date = assigned_date
+        task.due_date = due_date
 
         # Send an email notification to the user
         send_task_assignment_email(current_app.mail, task, user)
-
+        
     db.session.commit()
 
     return redirect(url_for('user_views.view_tasks'))
