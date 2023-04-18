@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from App.database import db
 from App.models import User, Role, Task, UserRoles, Comment, Report
 from App.models.task import get_user_role_tasks, get_tasks_by_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import and_
 from flask import make_response
 from App.utils import generate_pdf_report, get_tasks_for_report_type, get_all_tasks_for_user
@@ -333,7 +333,6 @@ def add_comment(task_id):
     comments = Comment.query.filter_by(task_id=task_id).order_by(Comment.timestamp.desc()).all()
     return render_template('task_details.html', task=task, comments=comments)
 
-from datetime import datetime, timedelta
 
 @user_views.route('/resources', methods=['GET'])
 @login_required
