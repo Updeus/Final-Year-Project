@@ -37,8 +37,16 @@
 
     .row{
      padding: 10px;
+     
     }
 
+    .column {
+  float: left;
+  width: 50%;
+  padding: 0 10px;
+ 
+ 
+}
 </style>
 
 {% extends "layout.html" %}
@@ -51,8 +59,10 @@
 <body style="height: 100vh">
     <br>
     <h2>Tasks</h2>
+    <br>
     {% for task in tasks %}
-     <div class = "card">
+    <div class="column">
+     <div class = "card" style="width:30vw; ">
         <div class="title" style="font-size: larger;">
             <a href="{{ url_for('user_views.task_details', task_id=task.id) }}">{{ task.title }}</a></div>
         <div> Description: {{task.description}} </div>
@@ -72,6 +82,7 @@
          <div> Due Date: {{ task.due_date.strftime('%Y-%m-%d') }}</div>
         <div>Status: {{task.status}} </div> </div>
         <div></div>
+    </div>
     {% endfor %}
     </div>
 </div>
