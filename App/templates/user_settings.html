@@ -92,6 +92,7 @@ li {
   margin-bottom: 10px;
 }
 
+
     </style>
   </head>
 
@@ -113,18 +114,20 @@ li {
     <div class="container" id="content"></div>
     <div class="container" style="height: 100vh">
       <h1 class="mt-5">User Settings</h1>
-      <br><br>
+      <br>
       {% for message in get_flashed_messages() %}
       <p>{{ message }}</p>
       {% endfor %}
+      <h5 style="color:white">Type To Change:</h5>
+      <br>
       <form method="POST" action="{{ url_for('user_views.user_settings') }}">
-        <label for="username">New Username:</label>
+        <label for="username">Username:</label>
         <input type="text" name="username" value="{{ current_user.username }}"><br>
-        <label for="email">New Email:</label>
+        <label for="email">Email:</label>
         <input type="email" name="email" value="{{ current_user.email }}"><br>
-        <label for="password">New Password:</label>
+        <label for="password">Password:</label>
         <input type="password" name="password"><br>
-        <input type="submit" value="Update Settings" class="btn btn-primary mt-3">
+        <input type="submit" value="Update Settings" class="btn btn-primary mt-4" style="background-color:#05888f">
       </form>
     </div>
   </body>

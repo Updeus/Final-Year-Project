@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 
+{% block title %}DCIT Task Tracker{% endblock %}
+{% block page %}DCIT Task Tracker{% endblock %}
+{{ super() }}
+
 {% block content %}
+<br>
 <h1>Generate Report</h1>
 <br><br>
 <form method="post" action="{{ url_for('user_views.generate_report') }}">
@@ -37,7 +42,7 @@
     {% endfor %}
   </select>
   {% endif %}
-  <button type="submit">Generate Report</button>
+  <button type="submit" style="background-color:#05888f">Generate Report</button>
 </form>
 
 <script>

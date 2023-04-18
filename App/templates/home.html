@@ -141,15 +141,24 @@ img.hover-shadow {
 
 .adminpanel{
   text-align: center;
-  background-color: #99beec;
+  background-color: #0f7075;
   margin-left: 20%;
   margin-right: 20%;
   height: auto;
   padding: 10px;
   outline:#abafd5 solid 4px;
+  border-radius: 10px;
   
 }
 
+.logo{
+  width: 150px;
+  height:110px;
+  position:absolute;
+  top: 0;
+  left: -150px;
+
+}
 
 
   </style>
@@ -164,7 +173,7 @@ img.hover-shadow {
 {% block content %}
 <body>
   
-  <img src="{{url_for('static', filename='crest.png')}}" style="width: 115px;height:115px;position:absolute;top: 0;left: -150px;" >
+ <!---- <img src="{{url_for('static', filename='crest.png')}}" class="logo" > -->
 
   <div class="container">
     <!-- ... -->
@@ -176,7 +185,7 @@ img.hover-shadow {
  
   <!----  <button class="dropbtn" href="{{ url_for('user_views.view_tasks') }}">View Tasks</button> 
     <button class="dropbtn" href="{{ url_for('user_views.user_settings') }}">User Settings</button> -->
-    <h2 style="text-align:center">Welcome to Task Tracker</h2>
+    <h2 style="text-align:center">Welcome to DCIT Task Tracker</h2>
     {% if current_user.has_roles('Admin') %}
    <br><br>
     <div class ="adminpanel">

@@ -26,10 +26,13 @@
     }
 </style>
 {% extends "layout.html" %}
+{% block title %}DCIT Task Tracker{% endblock %}
+{% block page %}DCIT Task Tracker{% endblock %}
+{{ super() }}
 {% block content %}
 <br>
 <div class = "card">
-    <div class="title">
+    <div class="title" style="font-size: larger;">
         <a href="{{ url_for('user_views.task_details', task_id=task.id) }}">{{ task.title }}</a></div>
     <div> Description: {{task.description}} </div>
     <div> {% if task.role.leader.username != null %}
@@ -57,7 +60,7 @@
                         <option value="Completed" {% if task.status=='Completed' %}selected{% endif %}>Completed
                         </option>
                     </select>
-                    <button type="submit">Update Status</button>
+                    <button type="submit" class="btn btn-primary" style="background-color:#05888f; color: white;">Update Status</button>
                 </form>
                 {% endif %}
             </tr>
@@ -77,14 +80,15 @@
                 <label class="custom-file-label" for="attachment">Choose file</label>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Add Comment</button>
+        <button type="submit" class="btn btn-primary" style="background-color:#05888f">Add Comment</button>
     </form>
 
     <h3 class="mt-5 mb-3">Comments</h3>
     {% for comment in task.comments %}
     <div class="card">
-        <div>User: {{ comment.user.username }}</div>
         <div>{{ comment.content }}</div>
+        <br>
+        <div>Posted by: {{ comment.user.username }}</div>
         <div>{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</div>
                 
                  <div>
@@ -103,5 +107,5 @@
             {% endfor %}
 
 </div>
-{%endblock %}
+{% endblock %}
 

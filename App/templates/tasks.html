@@ -48,12 +48,12 @@
 
 
 {% block content %}
-<body>
+<body style="height: 100vh">
     <br>
     <h2>Tasks</h2>
     {% for task in tasks %}
      <div class = "card">
-        <div class="title">
+        <div class="title" style="font-size: larger;">
             <a href="{{ url_for('user_views.task_details', task_id=task.id) }}">{{ task.title }}</a></div>
         <div> Description: {{task.description}} </div>
         <div> {% if task.role.leader.username != null %}
@@ -61,7 +61,7 @@
              {% endif %} 
             </div>
             
-        <div>Committee: {{task.role.name}}</div>  
+        <div> Committee: {{task.role.name}}</div>  
         <div>Assigned to: 
             {% for user in task.role.users %}
                     {% if user != task.role.leader %}
