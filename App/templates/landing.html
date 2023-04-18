@@ -11,7 +11,7 @@
         
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         
-        <title>{% block title %}{% endblock %}</title>
+        <title>{% block title %}DCIT Task Tracker{% endblock %}</title>
       </head>
 <style>
 .landing{
@@ -21,13 +21,23 @@
     background-size:cover;
     width:100vw;
   }
+
+  .container{
+ 
+   
+  }
  </style>
 
  <body>
     <div class= "landing">
+      <br>
+      <br>
         <h2 style="color:white"> Welcome to DCIT Task Tracker </h2>
-      <a class="btn btn-primary mt-3" href="{{ url_for('user_views.login') }}">Login</a>
-      <a class="btn btn-secondary mt-3" href="{{ url_for('user_views.signup') }}">Sign Up</a>
+        <div class ="container">    
+      <a class="btn btn-primary mt-3" style="height: 40px; width:90px;" href="{{ url_for('user_views.login') }}">Login</a>
+      <br>
+      <a class="btn btn-secondary mt-3" style="background-color:#05888f; outline-color: #05888f;" href="{{ url_for('user_views.signup') }}">Sign Up</a>
+  </div>
       <br>
     </div>
     </body>
