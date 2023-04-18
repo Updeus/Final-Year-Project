@@ -1,12 +1,7 @@
 <!-- user_settings.html -->
 <!doctype html>
 <html>
-  {% extends "layout.html" %}
-  {% block title %}DCIT Task Tracker{% endblock %}
-  {% block page %}DCIT Task Tracker{% endblock %}
-  {{ super() }}
-  
-  {% block content %}
+
   <head>
     <title>User Settings</title>
     <meta charset="utf-8">
@@ -95,7 +90,12 @@ li {
 
     </style>
   </head>
-
+  {% extends "layout.html" %}
+  {% block title %}DCIT Task Tracker{% endblock %}
+  {% block page %}DCIT Task Tracker{% endblock %}
+  {{ super() }}
+  
+  {% block content %}
   <body>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
