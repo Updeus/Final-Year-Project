@@ -1,4 +1,7 @@
 {% extends "layout.html" %}
+{% block title %}DCIT Task Tracker{% endblock %}
+{% block page %}DCIT Task Tracker{% endblock %}
+{{ super() }}
 {% block content %}
 {% if current_user.is_authenticated %}
     <h1>Delegate Committee</h1>

@@ -62,7 +62,7 @@
     <br>
     {% for task in tasks %}
     <div class="column">
-     <div class = "card" style="width:30vw; ">
+     <div class = "card" style="max-width:60%; max-height: 100%; ">
         <div class="title" style="font-size: larger;">
             <a href="{{ url_for('user_views.task_details', task_id=task.id) }}">{{ task.title }}</a></div>
         <div> Description: {{task.description}} </div>
