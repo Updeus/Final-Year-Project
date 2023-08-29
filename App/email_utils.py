@@ -18,9 +18,7 @@ def get_decrypted_value(key_name):
 
     # Decrypt the value
     fernet = Fernet(encryption_key)
-    decrypted_value = fernet.decrypt(encrypted_value).decode()
-
-    return decrypted_value
+    return fernet.decrypt(encrypted_value).decode()
 
 api_key = get_decrypted_value("MAILGUN_API_KEY")
 api_base_url = get_decrypted_value("MAILGUN_API_BASE_URL")
@@ -44,16 +42,19 @@ def send_email_via_mailgun_api(to, subject, text):
 
 def send_task_assignment_email(mail, task, user):
     if user and user.email:
-        subject = "New Task Assigned: {}".format(task.title)
+        subject = f"New Task Assigned: {task.title}"
         body = f"Dear {user.username},\n\nYou have been assigned a new task: {task.title}\nDue Date: {task.due_date}\n\nTask Details: {task.description}\n\nPlease make sure to complete the task before the due date."
         send_email_via_mailgun_api([user.email], subject, body)
 
 def send_due_date_reminder_email(task):
-    task_assignment = db.session.query(task_assignments).filter_by(task_id=task.id).first()
-    if task_assignment:
+    if (
+        task_assignment := db.session.query(task_assignments)
+        .filter_by(task_id=task.id)
+        .first()
+    ):
         user = User.query.get(task_assignment.user_id)
         if user and user.email:
-            subject = "Task Due Date Reminder: {}".format(task.title)
+            subject = f"Task Due Date Reminder: {task.title}"
             body = f"Dear {user.username},\n\nThis is a reminder that the due date for your task '{task.title}' is due within 7 days.\n\nTask Details: {task.description}\n\nPlease make sure to complete the task as soon as possible."
             send_email_via_mailgun_api([user.email], subject, body)
 

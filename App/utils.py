@@ -29,11 +29,7 @@ def get_tasks_for_report_type(report_type, task_id, start_date, end_date, curren
 
 
 def get_all_tasks_for_user(user):
-    if user.has_roles('Admin'):
-        tasks = Task.query.all()
-    else:
-        tasks = user.assigned_tasks
-    return tasks
+    return Task.query.all() if user.has_roles('Admin') else user.assigned_tasks
 
 def generate_pdf_report(tasks, report_type, current_user):
     template = """

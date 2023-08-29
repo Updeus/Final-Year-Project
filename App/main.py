@@ -57,8 +57,6 @@ def loadConfig(app, config):
 def create_admin_account(app):
     with app.app_context():
         admin_username = "Admin"
-        admin_password = "Password1"
-        admin_email = "admin@gmail.com"
         admin_role_name = "Admin"
 
         admin_role = Role.query.filter_by(name=admin_role_name).first()
@@ -70,6 +68,8 @@ def create_admin_account(app):
         admin = User.query.filter_by(username=admin_username).first()
 
         if not admin:
+            admin_password = "Password1"
+            admin_email = "admin@gmail.com"
             admin = User(
                 username=admin_username,
                 email=admin_email,

@@ -111,21 +111,18 @@ def view_tasks():
             seen_tasks.add(task_key)
             unique_tasks.append(task)
 
-    tasks = unique_tasks
-
-    if not tasks:
+    if not (tasks := unique_tasks):
         return render_template('no_tasks.html')
-    
-    else:
-        # Get current date and time
-        now = datetime.now()
 
-        # Check each task and send a reminder email if necessary
-        for task in tasks:
-            if task.status != 'Completed'  and task.due_date <= now + timedelta(days=7):
-                send_due_date_reminder_email(task)
+    # Get current date and time
+    now = datetime.now()
 
-        return render_template('tasks.html', tasks=tasks)
+    # Check each task and send a reminder email if necessary
+    for task in tasks:
+        if task.status != 'Completed'  and task.due_date <= now + timedelta(days=7):
+            send_due_date_reminder_email(task)
+
+    return render_template('tasks.html', tasks=tasks)
 
 @user_views.route('/')
 def landing():
@@ -148,9 +145,7 @@ def remove_task():
 
     if request.method == 'POST':
         task_id = request.form.get('task_id')
-        task = Task.query.get(task_id)
-
-        if task:
+        if task := Task.query.get(task_id):
             db.session.delete(task)
             db.session.commit()
             flash('Task removed successfully.')
@@ -168,15 +163,10 @@ def tasks_by_role():
     role_id = request.form.get('role_id')
     tasks = Task.query.filter_by(role_id=role_id).all()
 
-    tasks_data = []
-
-    for task in tasks:
-        tasks_data.append({
-            'id': task.id,
-            'title': task.title,
-            'role_name': task.role.name
-        })
-
+    tasks_data = [
+        {'id': task.id, 'title': task.title, 'role_name': task.role.name}
+        for task in tasks
+    ]
     return jsonify(tasks_data)
 
 
@@ -189,9 +179,7 @@ def create_role():
 
     if request.method == 'POST':
         role_name = request.form.get('role_name')
-        existing_role = Role.query.filter_by(name=role_name).first()
-
-        if existing_role:
+        if existing_role := Role.query.filter_by(name=role_name).first():
             flash('Role already exists.')
         else:
             new_role = Role(name=role_name)
@@ -209,8 +197,7 @@ def remove_role():
     roles = Role.query.all()
     if request.method == 'POST':
         role_id = request.form.get('role_id')
-        role = Role.query.get(role_id)
-        if role:
+        if role := Role.query.get(role_id):
             db.session.delete(role)
             db.session.commit()
             flash('Role removed successfully.')
@@ -296,8 +283,9 @@ def signup():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-        if existing_user:
+        if existing_user := User.query.filter(
+            (User.username == username) | (User.email == email)
+        ).first():
             flash('Username or email already exists.')
         else:
             new_user = User(username=username, email=email, password=password)
@@ -348,7 +336,9 @@ def resources():
             'title': task.title.replace("12a", ""),
             'start': task.due_date.isoformat().replace("12a", ""),
             'end': task.due_date.isoformat().replace("12a", ""),
-            'className': 'red-event' if task.due_date <= datetime.today() + timedelta(days=7) else ''
+            'className': 'red-event'
+            if task.due_date <= datetime.now() + timedelta(days=7)
+            else '',
         }
         events.append(event)
     # Convert the events list to a JSON object
@@ -389,13 +379,9 @@ def update_status(task_id):
     if new_status not in ['To Do', 'Ongoing', 'Completed']:
         flash('Invalid status.')
         return redirect(request.referrer)
-    
+
     task.status = new_status
-    if new_status == 'Completed':
-        task.completed_date = datetime.utcnow()  # Set the completed_date when the status is 'Completed'
-    else:
-        task.completed_date = None  # Reset the completed_date when the status is not 'Completed'
-    
+    task.completed_date = datetime.utcnow() if new_status == 'Completed' else None
     db.session.commit()
     flash('Task status updated successfully.')
     return redirect(url_for('user_views.view_tasks'))
