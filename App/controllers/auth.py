@@ -5,9 +5,7 @@ from App.models import User
 
 def authenticate(username, password):
     user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        return user
-    return None
+    return user if user and user.check_password(password) else None
 
 # Payload is a dictionary which is passed to the function by Flask JWT
 def identity(payload):

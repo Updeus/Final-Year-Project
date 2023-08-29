@@ -6,12 +6,11 @@ from flask_user import login_required, UserManager, UserMixin
 
 
 def createAdmin():
-    user = get_user_by_username('Admin')
-    if user:
+    if user := get_user_by_username('Admin'):
         return None
     admin_role = Role(name='Admin')
     db.session.add(admin_role)
-    db.session.commit()   
+    db.session.commit()
     admin = User(
     username='Admin', password='Password1', email='admin@example.com')
     db.session.add(admin)
@@ -21,8 +20,7 @@ def createAdmin():
     return
 
 def get_role_by_name(name):
-    role = Role.query.filter_by(name=name).first()
-    return role
+    return Role.query.filter_by(name=name).first()
 
 def create_user(username, password, email):
     newuser = User(username=username, password=password, email=email)
@@ -53,8 +51,7 @@ def get_all_users_json():
     return users
 
 def update_user(id, username):
-    user = get_user(id)
-    if user:
+    if user := get_user(id):
         user.username = username
         db.session.add(user)
         db.session.commit()
@@ -62,8 +59,7 @@ def update_user(id, username):
     return None
 
 def delete_user(id):
-    user = get_user(id)
-    if user:
+    if user := get_user(id):
         db.session.delete(user)
         return db.session.commit()
     return None
